@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args)
     {
         //The file path is hard-coded to avoid reading from System.in which is quite complicated with gradle
-        File f = new File("C:\\Users\\Sarra\\Desktop\\TestFiles\\DocumentPickerViewController.m");
+        File f = new File("C:\\Users\\Sarra\\Desktop\\TestFiles\\iOS9-compatible\\RBLMainViewController.m");
         ParserFacade t = new ParserFacade();
         AstPrinter printer = new AstPrinter();
         try{

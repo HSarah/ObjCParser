@@ -16,4 +16,4 @@ dependencies {
 }
 
 apply plugin: 'application'
-mainClassName = "parser.Main"
+mainClassName = "Analyzer.Main"
