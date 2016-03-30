@@ -1,9 +1,10 @@
-package parser;
+package io.paprika.parser;
 
+import io.paprika.analyzer.Analyzer;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import parser.ObjCLexer;
-import parser.ObjCParser;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 
 import java.io.File;
@@ -26,8 +27,19 @@ public class ParserFacade {
         String code = readFile(file, Charset.forName("UTF-8"));
         ObjCLexer lexer = new ObjCLexer(new ANTLRInputStream(code));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
-        ObjCParser parser = new ObjCParser(tokens);
 
-        return parser.translation_unit();
+        ObjCParser parser = new ObjCParser(tokens);
+        ObjCParser.Translation_unitContext tuc = parser.translation_unit();
+        ParseTree tree = tuc; // parse
+
+        ParseTreeWalker walker = new ParseTreeWalker(); // create standard walker
+
+        //Analyzer analyzer = new Analyzer();
+        CustomizedListener listener = new CustomizedListener(parser);
+        walker.walk(listener, tree);
+        listener.printModel();
+        return tuc;
+
+
     }
 }

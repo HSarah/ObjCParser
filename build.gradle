@@ -16,4 +16,4 @@ dependencies {
 }
 
 apply plugin: 'application'
-mainClassName = "Analyzer.Main"
+mainClassName = "io.paprika.analyzer.Main"

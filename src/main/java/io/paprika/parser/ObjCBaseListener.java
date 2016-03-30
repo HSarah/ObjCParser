@@ -1,6 +1,7 @@
 // Generated from C:\Users\Sarra\IdeaProjects\artid2\src\main\antlr\ObjC.g4 by ANTLR 4.2.2
-package parser;
+package io.paprika.parser;
 
+import io.paprika.analyzer.Analyzer;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -12,11 +13,17 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * of the available methods.
  */
 public class ObjCBaseListener implements ObjCListener {
+
+    Analyzer analyzer;
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+    public ObjCBaseListener()
+    {
+
+    }
 	@Override public void enterCompound_statement(@NotNull ObjCParser.Compound_statementContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -108,7 +115,11 @@ public class ObjCBaseListener implements ObjCListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterClass_implementation(@NotNull ObjCParser.Class_implementationContext ctx) { }
+	@Override public void enterClass_implementation(@NotNull ObjCParser.Class_implementationContext ctx) {
+
+
+
+	}
 	/**
 	 * {@inheritDoc}
 	 *

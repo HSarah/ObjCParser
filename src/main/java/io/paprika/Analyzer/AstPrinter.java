@@ -1,10 +1,8 @@
-package Analyzer;
+package io.paprika.analyzer;
 
 import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
-import parser.ObjCParser;
-
-import java.io.PrintWriter;
+import io.paprika.parser.ObjCParser;
 
 /**
  * Created by Sarra on 28/02/2016.
@@ -18,6 +16,7 @@ public class AstPrinter {
 
     private void explore(RuleContext ctx, int indentation) {
         String ruleName = ObjCParser.ruleNames[ctx.getRuleIndex()];
+
         for (int i=0;i<indentation;i++) {
             System.out.print("  ");
         }
