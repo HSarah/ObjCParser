@@ -14,7 +14,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  */
 public class ObjCBaseListener implements ObjCListener {
 
-    Analyzer analyzer;
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,5 +1,9 @@
 package io.paprika.model;
 
+import io.paprika.parser.ObjCParser;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +14,7 @@ public class PaprikaMethod extends Entity{
     private String returnType;
     private boolean isFunction;
     private boolean isStatic;
+    private ParseTree ctx;
 
 
     private Set<PaprikaVariable> usedVariables;
@@ -28,10 +33,12 @@ public class PaprikaMethod extends Entity{
         this.returnType = returnType;
         this.isFunction = isFunction;
         this.isStatic = isStatic;
+        ctx = null ;
     }
 
     public static PaprikaMethod createPaprikaMethod(String name, String returnType,  PaprikaClass paprikaClass, boolean isFunction, boolean isStatic) {
         PaprikaMethod paprikaMethod = new PaprikaMethod(name,  returnType, paprikaClass, isFunction, isStatic);
+
         paprikaClass.addPaprikaMethod(paprikaMethod);
         return  paprikaMethod;
     }
@@ -93,4 +100,11 @@ public class PaprikaMethod extends Entity{
         isStatic = aStatic;
     }
 
+    public ParseTree getCtx() {
+        return ctx;
+    }
+
+    public void setCtx(ParseTree ctx) {
+        this.ctx = ctx;
+    }
 }

@@ -1,10 +1,13 @@
 package io.paprika.parser;
 
-import io.paprika.analyzer.Analyzer;
+import io.paprika.analyzer.CallGraphGenerator;
+import io.paprika.analyzer.ModelGenerator;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.atn.ATN;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.antlr.v4.runtime.tree.pattern.ParseTreePattern;
 
 
 import java.io.File;
@@ -31,15 +34,16 @@ public class ParserFacade {
         ObjCParser parser = new ObjCParser(tokens);
         ObjCParser.Translation_unitContext tuc = parser.translation_unit();
         ParseTree tree = tuc; // parse
-
         ParseTreeWalker walker = new ParseTreeWalker(); // create standard walker
+        parser = null;
+        ModelGenerator modelGenerator = new ModelGenerator();
+        walker.walk(modelGenerator, tree);
+      //  modelGenerator.printModel();
+        CallGraphGenerator callGraphGenerator = new CallGraphGenerator(modelGenerator.getClasses(), modelGenerator.getMethods());
+        callGraphGenerator.buildCallGraph();
+        callGraphGenerator.printGraph();
 
-        //Analyzer analyzer = new Analyzer();
-        CustomizedListener listener = new CustomizedListener(parser);
-        walker.walk(listener, tree);
-        listener.printModel();
         return tuc;
-
 
     }
 }

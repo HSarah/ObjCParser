@@ -217,15 +217,15 @@ primary_expression:
 	| STRING_LITERAL
 	| ('(' expression ')')
 	| 'self'
-        | 'super'
+    | 'super'
 	| message_expression
 	| selector_expression
 	| protocol_expression
 	| encode_expression
-        | dictionary_expression
-        | array_expression
-        | box_expression
-        | block_expression;
+    | dictionary_expression
+    | array_expression
+    | box_expression
+    | block_expression;
 
 dictionary_pair:
          postfix_expression':'postfix_expression;

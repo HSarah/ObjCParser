@@ -22,8 +22,20 @@ public class PaprikaVariable extends Entity{
     }
 
     public static PaprikaVariable createPaprikaVariable(String name, String type, PaprikaModifiers modifier, PaprikaClass paprikaClass) {
-        PaprikaVariable paprikaVariable = new PaprikaVariable(name, type, modifier, paprikaClass);
-        paprikaClass.addPaprikaVariable(paprikaVariable);
+        PaprikaVariable paprikaVariable= null;
+        //Check if the variable is already attached to the class or no
+        boolean exists = false;
+        for(PaprikaVariable v : paprikaClass.getPaprikaVariables()){
+            if((v.getName()).equals(name)){
+                exists = true;
+                paprikaVariable = v;
+            }
+        }
+        if(exists == false){
+            paprikaVariable= new PaprikaVariable(name, type, modifier, paprikaClass);
+            paprikaClass.addPaprikaVariable(paprikaVariable);
+        }
+
         return paprikaVariable;
     }
 

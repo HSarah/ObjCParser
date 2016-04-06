@@ -48,6 +48,7 @@ public class PaprikaClass extends Entity{
         this.interfaces = new HashSet<>();
         this.interfacesNames = new ArrayList<>(0);
         this.isInterface = false;
+        this.parentName = null;
     }
 
     public static PaprikaClass createPaprikaClass(String name, PaprikaApp paprikaApp) {
@@ -130,7 +131,9 @@ public class PaprikaClass extends Entity{
     public ArrayList<String> getInterfacesNames() {
         return interfacesNames;
     }
-
+    public void setInterfacesNames(ArrayList<String> list) {
+        this.interfacesNames= list;
+    }
     public void addInterfaceName(String name) {
         this.interfacesNames.add(name);
     }
