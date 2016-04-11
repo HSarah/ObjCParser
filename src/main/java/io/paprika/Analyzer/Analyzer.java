@@ -46,12 +46,12 @@ public class Analyzer {
         currentMethod = m;
     }
 
-    public void insertArgument(String name, int position)
+    /*public void insertArgument(String name, int position)
     {
         PaprikaArgument.createPaprikaArgument(name, position, currentMethod);
        // System.out.println("parameter inserted !!");
 
-    }
+    }*/
 
     public void printModel()
     {
@@ -64,7 +64,7 @@ public class Analyzer {
                         " statique: "+ m.getStatic() );
                 for(PaprikaArgument arg : m.getArguments())
                 {
-                    System.out.println("----Arg: " + arg.getName() + " position: "+arg.getPosition());
+                    System.out.println("----Arg: " + arg.getArgumentName()+" type: "+arg.getName() + " position: "+arg.getPosition());
                 }
             }
         }

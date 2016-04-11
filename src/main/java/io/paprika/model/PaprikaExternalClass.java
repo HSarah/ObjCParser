@@ -1,30 +1,25 @@
 package io.paprika.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Observer;
 import java.util.Set;
 
 
-public class PaprikaExternalClass extends Entity{
+public class PaprikaExternalClass extends Entity {
     private PaprikaApp paprikaApp;
     private String parentName;
     private Set<PaprikaExternalMethod> paprikaExternalMethods;
+    private ArrayList<PaprikaExternalVariable> paprikaExternalVariables;
+    private ArrayList<Observer> observers;
 
-    public Set<PaprikaExternalMethod> getPaprikaExternalMethods() {
-        return paprikaExternalMethods;
-    }
-
-    public String getParentName() {
-        return parentName;
-    }
-
-    public void setParentName(String parentName) {
-        this.parentName = parentName;
-    }
 
     private PaprikaExternalClass(String name, PaprikaApp paprikaApp) {
         this.setName(name);
         this.paprikaApp = paprikaApp;
         this.paprikaExternalMethods  = new HashSet<>();
+        this.paprikaExternalVariables = new ArrayList<>();
+        this.observers = new ArrayList<>(0);
     }
 
     public static PaprikaExternalClass createPaprikaExternalClass(String name, PaprikaApp paprikaApp) {
@@ -43,6 +38,43 @@ public class PaprikaExternalClass extends Entity{
 
     public void setPaprikaApp(PaprikaApp paprikaApp) {
         this.paprikaApp = paprikaApp;
+    }
+
+    public ArrayList<PaprikaExternalVariable> getPaprikaExternalVariables() {
+        return paprikaExternalVariables;
+    }
+
+    public void addPaprikaExternalVariable(PaprikaExternalVariable paprikaExternalVariable) {
+        this.paprikaExternalVariables.add(paprikaExternalVariable);
+    }
+    public Set<PaprikaExternalMethod> getPaprikaExternalMethods() {
+        return paprikaExternalMethods;
+    }
+
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+
+    //Observable
+    @Override
+    public synchronized void addObserver(Observer o) {
+        this.observers.add(o);
+    }
+
+    @Override
+    public synchronized void deleteObserver(Observer o) {
+        this.observers.remove(o);
+    }
+
+    @Override
+    public void notifyObservers(Object arg) {
+        for(Observer o : this.observers){
+            o.update(this,arg);
+        }
     }
 
 }

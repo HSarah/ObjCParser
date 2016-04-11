@@ -1,49 +1,45 @@
-package io.paprika.parser;
+package io.paprika.analyzer;
 
 
 import io.paprika.model.*;
+import io.paprika.parser.ObjCBaseListener;
+import io.paprika.parser.ObjCParser;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.neo4j.cypher.internal.compiler.v2_2.functions.Str;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
  * Created by Sarra on 24/03/2016.
  */
-public class CustomizedListener extends ObjCBaseListener {
+public class ModelGenerator extends ObjCBaseListener {
 
-    ObjCParser parser;
     PaprikaApp app;
-    private ArrayList<PaprikaClass> classes;
-    private ArrayList<PaprikaExternalClass> externalClasses;
-    private ArrayList<PaprikaMethod> methods;
-    private ArrayList<PaprikaVariable> variables;
-    private ArrayList<PaprikaArgument> arguments;
-    private ArrayList<PaprikaExternalMethod> externalMethods;
-    private ArrayList<PaprikaExternalArgument> externalArguments;
-    PaprikaClass currentClass;
-    PaprikaMethod currentMethod;
+    private static ArrayList<PaprikaClass> classes= null;
+    private static ArrayList<PaprikaMethod> methods = null;
+    private PaprikaClass currentClass;
+    private PaprikaMethod currentMethod;
+    private PaprikaStatement currentStatement;
 
-    public CustomizedListener(ObjCParser parser) {
-        this.parser = parser;
+    public ModelGenerator() {
         this.app = PaprikaApp.createPaprikaApp("UnknownApp");
-        this.classes = new ArrayList<PaprikaClass>();
-        this.methods = new ArrayList<PaprikaMethod>();
-        this.variables = new ArrayList<PaprikaVariable>();
-        this.arguments = new ArrayList<PaprikaArgument>();
-        this.externalArguments = new ArrayList<PaprikaExternalArgument>();
-        this.externalClasses = new ArrayList<PaprikaExternalClass>();
-        this.externalMethods = new ArrayList<PaprikaExternalMethod>();
+        this.classes = new ArrayList<PaprikaClass>(0);
+        this.methods = new ArrayList<PaprikaMethod>(0);
         currentClass = null;
         currentMethod = null;
+        currentStatement = null;
 
     }
     @Override public void enterClass_implementation(@NotNull ObjCParser.Class_implementationContext ctx) {
         ObjCParser.Class_nameContext class_nameContext= ctx.class_name();
-        insertClass(class_nameContext.IDENTIFIER().getText());
+        PaprikaClass c= insertClass(class_nameContext.IDENTIFIER().getText());
+        //Get the super class name
+        if(ctx.superclass_name()!=null){
+            c.setParentName(ctx.superclass_name().IDENTIFIER().getText());
+        }
 
     }
 
@@ -51,7 +47,7 @@ public class CustomizedListener extends ObjCBaseListener {
     @Override public void enterFunction_definition(@NotNull ObjCParser.Function_definitionContext ctx) {
         String name="";
         String returnType="";
-        HashMap<Integer, String> args;
+        LinkedHashMap<String, String> args;
         //Getting the return type
         if (ctx.declaration_specifiers() != null){
             for (ObjCParser.Type_specifierContext tsc : ctx.declaration_specifiers().type_specifier())
@@ -63,75 +59,85 @@ public class CustomizedListener extends ObjCBaseListener {
         }
 
         //Getting the arguments
-
         if((args=getParameters(ctx.declarator())) == null){
-            args = new HashMap<Integer, String>(0);
+            args = new LinkedHashMap<String, String>(0);
         }
 
         //Getting the function name
         name = getIdentifier(ctx.declarator()).IDENTIFIER().toString()+ ":";
-        this.insertMethod(name, returnType, true, true, args);
+        this.insertMethod(name, returnType, true, true, args, null);
     }
 
     @Override public void enterInstance_method_definition(@NotNull ObjCParser.Instance_method_definitionContext ctx) {
         String name="";
-        HashMap<Integer, String> args = new HashMap<Integer, String>(0);
+        LinkedHashMap<String, String> args = new LinkedHashMap<>(0);
         ObjCParser.Method_selectorContext ms =ctx.method_definition().method_selector();
         ObjCParser.SelectorContext sc = ms.selector();
-        // System.out.println("voilà la valeur de sc :" + sc);
-        int position = 0 ;
-
-
 
         if (sc != null)
         {TerminalNode tn = sc.IDENTIFIER();
-            name = (tn.toString()).concat(":");
+            name = (tn.toString());
         }else {
-
+            String type;
             for (ObjCParser.Keyword_declaratorContext k : ms.keyword_declarator()) {
                 // The case of compound method name
                 if (k.selector() != null) {
                     name=name.concat(k.selector().IDENTIFIER().toString()+":");
                 }
-                args.put(position, k.method_type(0).type_name().getText());
-                position++ ;
-            }
-
-        }
-
-        String returnType =  ctx.method_definition().method_type().type_name().getText();
-        this.insertMethod(name, returnType, false , false , args);
-    }
-
-    @Override public void enterClass_method_definition(@NotNull ObjCParser.Class_method_definitionContext ctx) {
-        String name="";
-        HashMap<Integer, String> args = new HashMap<Integer, String>(0);
-        ObjCParser.Method_selectorContext ms =ctx.method_definition().method_selector();
-        ObjCParser.SelectorContext sc = ms.selector();
-        // System.out.println("voilà la valeur de sc :" + sc);
-        int position = 0 ;
-
-
-
-        if (sc != null)
-        {TerminalNode tn = sc.IDENTIFIER();
-            name = (tn.toString()).concat(":");
-        }else {
-
-            for (ObjCParser.Keyword_declaratorContext k : ms.keyword_declarator()) {
-                //System.out.println(" voila un paramètre : "+ k.IDENTIFIER());
-                // The case of compound method name
-                if (k.selector() != null) {
-                    name=name.concat(k.selector().IDENTIFIER().toString()+":");
+                type =k.method_type(0).type_name().getText();
+                if(type.endsWith(" *")){
+                    type = type.substring(0, type.length() - 2);
+                }else if(type.endsWith("*")){
+                    type = type.substring(0, type.length() - 1);
                 }
-                args.put(position, k.method_type(0).type_name().getText());
-                position++ ;
+                args.put(k.IDENTIFIER().getText(), type);
             }
 
         }
 
         String returnType =  ctx.method_definition().method_type().getText();
-        this.insertMethod(name, returnType, false , true , args);
+        if(returnType.endsWith(" *")){
+            returnType = returnType.substring(0, returnType.length() - 2);
+        }else if(returnType.endsWith("*")){
+            returnType = returnType.substring(0, returnType.length() - 1);
+        }
+        currentMethod=this.insertMethod(name, returnType, false , true , args, ctx.method_definition());
+    }
+
+    @Override public void enterClass_method_definition(@NotNull ObjCParser.Class_method_definitionContext ctx) {
+        String name="";
+        LinkedHashMap<String, String> args = new LinkedHashMap<>(0);
+        ObjCParser.Method_selectorContext ms =ctx.method_definition().method_selector();
+        ObjCParser.SelectorContext sc = ms.selector();
+
+        if (sc != null)
+        {TerminalNode tn = sc.IDENTIFIER();
+            name = (tn.toString());
+        }else {
+            String type;
+            for (ObjCParser.Keyword_declaratorContext k : ms.keyword_declarator()) {
+                // The case of compound method name
+                if (k.selector() != null) {
+                    name=name.concat(k.selector().IDENTIFIER().toString()+":");
+                }
+                type =k.method_type(0).type_name().getText();
+                if(type.endsWith(" *")){
+                    type = type.substring(0, type.length() - 2);
+                }else if(type.endsWith("*")){
+                    type = type.substring(0, type.length() - 1);
+                }
+                args.put(k.IDENTIFIER().getText(), type);
+            }
+
+        }
+
+        String returnType =  ctx.method_definition().method_type().getText();
+        if(returnType.endsWith(" *")){
+            returnType = returnType.substring(0, returnType.length() - 2);
+        }else if(returnType.endsWith("*")){
+            returnType = returnType.substring(0, returnType.length() - 1);
+        }
+        currentMethod=this.insertMethod(name, returnType, false , true , args, ctx.method_definition());
     }
 
     @Override public void enterInit_declarator_list(@NotNull ObjCParser.Init_declarator_listContext ctx) {
@@ -174,12 +180,17 @@ public class CustomizedListener extends ObjCBaseListener {
         return c;
     }
 
-    public void insertMethod(String name,  String returnType, boolean isFunction, boolean isStatic, HashMap<Integer, String> args) {
+    public PaprikaMethod insertMethod(String name, String returnType, boolean isFunction, boolean isStatic,
+                             LinkedHashMap<String, String> args , ParseTree ctx) {
         PaprikaMethod m = PaprikaMethod.createPaprikaMethod(name, returnType, currentClass, isFunction, isStatic);
-        for( HashMap.Entry<Integer, String> pair: args.entrySet()){
-            PaprikaArgument.createPaprikaArgument(pair.getValue(), pair.getKey(), m);
+        m.setCtx(ctx);
+        int position=0;
+        for( HashMap.Entry<String, String> pair: args.entrySet()){
+            PaprikaArgument.createPaprikaArgument(pair.getValue(), position, pair.getKey(), m);
+            position++;
         }
         methods.add(m);
+        return m;
     }
 
 
@@ -200,9 +211,23 @@ public class CustomizedListener extends ObjCBaseListener {
                         " statique: "+ m.getStatic() );
                 for(PaprikaArgument arg : m.getArguments())
                 {
-                    System.out.println("--Arg: " + arg.getName() + " position: "+arg.getPosition());
+                    System.out.println("--Arg: " + arg.getArgumentName()+" type: "+arg.getName() + " position: "+arg.getPosition());
                 }
+
+                //printing the statements
+                printStatement(m.getStatement());
             }
+        }
+    }
+
+    public void printStatement(PaprikaStatement statement){
+        System.out.println("New statement");
+        //System.out.println("In printStatement: statement == null "+ (statement==null));
+        for(PaprikaStatementVariable v: statement.getVariables()){
+            System.out.println("**variable: "+ v.getName()+" type: "+v.getType());
+        }
+        for(PaprikaStatement s: statement.getChildrenStatements()){
+            printStatement(s);
         }
     }
 
@@ -215,7 +240,7 @@ public class CustomizedListener extends ObjCBaseListener {
         return  type;
     }
 
-    HashMap<Integer, String> getParameters(ObjCParser.DeclaratorContext declaratorContext){
+    LinkedHashMap<String, String> getParameters(ObjCParser.DeclaratorContext declaratorContext){
 
         if(declaratorContext.direct_declarator().block_parameters() != null){
 
@@ -231,11 +256,9 @@ public class CustomizedListener extends ObjCBaseListener {
                     List<ObjCParser.Parameter_declarationContext> plist = declaratorContext.
                             direct_declarator().declarator_suffix(0).parameter_list().
                             parameter_declaration_list().parameter_declaration();
-                    HashMap<Integer,String> args = new HashMap<Integer,String>(0);
-                    int position = 0;
+                    LinkedHashMap<String,String> args = new LinkedHashMap<String,String>(0);
                     for (ObjCParser.Parameter_declarationContext pd : plist){
-                        args.put(position,getType(pd.declaration_specifiers()) );
-                        position++;
+                        args.put(pd.declarator().direct_declarator().getText(),getType(pd.declaration_specifiers()) );
                     }
                     return args;
 
@@ -311,12 +334,16 @@ public class CustomizedListener extends ObjCBaseListener {
 
     @Override public void enterClass_interface(@NotNull ObjCParser.Class_interfaceContext ctx) {
         ObjCParser.Class_nameContext class_nameContext= ctx.class_name();
-        insertClass(class_nameContext.IDENTIFIER().getText());
-
+        PaprikaClass c= insertClass(class_nameContext.IDENTIFIER().getText());
+        //Get the super class name
+        if(ctx.superclass_name()!=null){
+            c.setParentName(ctx.superclass_name().IDENTIFIER().getText());
+        }
         //handling the protocols
         if(ctx.protocol_reference_list() != null){
             handleProtocols(ctx.protocol_reference_list());
         }
+
 
     }
 
@@ -384,7 +411,9 @@ public class CustomizedListener extends ObjCBaseListener {
                 type = type.concat(t.getText());
             }
         }
-
+        if(type.endsWith(" *")){
+            type.replaceAll(" *$", "");
+        }
         //Getting the variable(s)
         if(list != null){
             for(ObjCParser.Init_declaratorContext declarator : list.init_declarator()){
@@ -406,9 +435,7 @@ public class CustomizedListener extends ObjCBaseListener {
         if (ctx.category_name()!= null) {
             className = className.concat("+"+ctx.category_name().IDENTIFIER().getText());
         }
-
         insertClass(className);
-
         //handling the protocols
         if(ctx.protocol_reference_list() != null){
             handleProtocols(ctx.protocol_reference_list());
@@ -440,18 +467,138 @@ public class CustomizedListener extends ObjCBaseListener {
                 if(declaration.class_method_declaration()!= null){
                     // handle class methods
                     for(ObjCParser.Class_method_declarationContext method : declaration.class_method_declaration()){
-
+                        handleClassMethodDeclaration(method);
                     }
                 }
                 if(declaration.instance_method_declaration()!= null){
                     //handle instance methods
                     for(ObjCParser.Instance_method_declarationContext method: declaration.instance_method_declaration()){
-                        
+                        handleInstanceMethodDeclaration(method);
                     }
                 }
             }
         }
     }
 
+    public void handleClassMethodDeclaration(@NotNull ObjCParser.Class_method_declarationContext ctx) {
+        String name="";
+        LinkedHashMap<String, String> args = new LinkedHashMap<String, String>(0);
+        ObjCParser.Method_selectorContext ms =ctx.method_declaration().method_selector();
+        ObjCParser.SelectorContext sc = ms.selector();
 
+
+
+        if (sc != null)
+        {TerminalNode tn = sc.IDENTIFIER();
+            name = (tn.toString()).concat(":");
+        }else {
+
+            for (ObjCParser.Keyword_declaratorContext k : ms.keyword_declarator()) {
+                // The case of compound method name
+                if (k.selector() != null) {
+                    name=name.concat(k.selector().IDENTIFIER().toString()+":");
+                }
+                args.put(k.IDENTIFIER().getText(), k.method_type(0).type_name().getText());
+            }
+
+        }
+
+        String returnType =  ctx.method_declaration().method_type().type_name().getText();
+        this.insertMethod(name, returnType, false , true , args, null);
+        // ctx is set to null because it's not needed in MCG building
+    }
+
+    public void handleInstanceMethodDeclaration(@NotNull ObjCParser.Instance_method_declarationContext ctx) {
+        String name="";
+        LinkedHashMap<String, String> args = new LinkedHashMap<String, String>(0);
+        ObjCParser.Method_selectorContext ms =ctx.method_declaration().method_selector();
+        ObjCParser.SelectorContext sc = ms.selector();
+
+
+
+        if (sc != null)
+        {TerminalNode tn = sc.IDENTIFIER();
+            name = (tn.toString()).concat(":");
+        }else {
+
+            for (ObjCParser.Keyword_declaratorContext k : ms.keyword_declarator()) {
+                // The case of compound method name
+                if (k.selector() != null) {
+                    name=name.concat(k.selector().IDENTIFIER().toString()+":");
+                }
+                args.put(k.IDENTIFIER().getText(), k.method_type(0).type_name().getText());
+            }
+
+        }
+
+        String returnType =  ctx.method_declaration().method_type().type_name().getText();
+        this.insertMethod(name, returnType, false , false , args, null);
+        // ctx is set to null because it's not needed for creating the method call graph
+    }
+
+    @Override public void enterCompound_statement(@NotNull ObjCParser.Compound_statementContext ctx) {
+
+        currentStatement=PaprikaStatement.createPaprikaStatement(ctx,currentStatement, currentMethod);
+        //System.out.println(" current== null : "+(currentMethod == null));
+    }
+
+    @Override public void exitCompound_statement(@NotNull ObjCParser.Compound_statementContext ctx) {
+        currentStatement=currentStatement.getParentStatement();
+    }
+
+    @Override public void exitClass_method_definition(@NotNull ObjCParser.Class_method_definitionContext ctx) {
+        currentMethod = null;
+    }
+
+    @Override public void exitInstance_method_definition(@NotNull ObjCParser.Instance_method_definitionContext ctx) {
+        currentMethod=null;
+    }
+
+    @Override public void enterDeclaration(@NotNull ObjCParser.DeclarationContext ctx) {
+        //System.out.println(" current == null "+ (currentStatement == null));
+        if(currentStatement!=null){
+            ObjCParser.Declaration_specifiersContext specifiers = ctx.declaration_specifiers();
+            ObjCParser.Init_declarator_listContext list = ctx.init_declarator_list();
+            String type = "";
+            String name = "";
+            //Getting the type
+            if(specifiers.type_specifier() != null){
+                for(ObjCParser.Type_specifierContext t : specifiers.type_specifier()){
+                    type = type.concat(t.getText());
+                }
+            }
+            if(type.endsWith(" *")){
+                type = type.substring(0, type.length() - 2);
+            }else if(type.endsWith("*")){
+                type = type.substring(0, type.length() - 1);
+            }
+            //Getting the variable(s)
+            if(list != null){
+                for(ObjCParser.Init_declaratorContext declarator : list.init_declarator()){
+                    name = getIdentifier(declarator.declarator()).IDENTIFIER().getText();
+                    PaprikaStatementVariable.createPaprikaStatementVariable (name, type, currentStatement);
+                }
+            }
+        }else{
+            System.out.println("current is null");
+        }
+    }
+
+
+
+    public static ArrayList<PaprikaClass> getClasses() {
+        return classes;
+    }
+
+    public static void setClasses(ArrayList<PaprikaClass> classes) {
+        ModelGenerator.classes = classes;
+    }
+
+    public static ArrayList<PaprikaMethod> getMethods() {
+        return methods;
+    }
+
+    public static void setMethods(ArrayList<PaprikaMethod> methods) {
+        ModelGenerator.methods = methods;
+    }
 }

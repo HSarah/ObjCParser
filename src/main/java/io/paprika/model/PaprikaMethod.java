@@ -15,14 +15,11 @@ public class PaprikaMethod extends Entity{
     private boolean isFunction;
     private boolean isStatic;
     private ParseTree ctx;
-
-
     private Set<PaprikaVariable> usedVariables;
     private Set<Entity> calledMethods;
     private List<PaprikaArgument> arguments;
-    public String getReturnType() {
-        return returnType;
-    }
+    private PaprikaStatement statement;
+    private ArrayList<PaprikaMessage> paprikaMessages;
 
     private PaprikaMethod(String name, String returnType, PaprikaClass paprikaClass, boolean isFunction, boolean isStatic) {
         this.setName(name);
@@ -34,6 +31,7 @@ public class PaprikaMethod extends Entity{
         this.isFunction = isFunction;
         this.isStatic = isStatic;
         ctx = null ;
+        this.paprikaMessages = new ArrayList<>(0);
     }
 
     public static PaprikaMethod createPaprikaMethod(String name, String returnType,  PaprikaClass paprikaClass, boolean isFunction, boolean isStatic) {
@@ -106,5 +104,24 @@ public class PaprikaMethod extends Entity{
 
     public void setCtx(ParseTree ctx) {
         this.ctx = ctx;
+    }
+    public String getReturnType() {
+        return returnType;
+    }
+
+    public PaprikaStatement getStatement() {
+        return statement;
+    }
+
+    public void setStatement(PaprikaStatement statement) {
+        this.statement = statement;
+    }
+
+    public ArrayList<PaprikaMessage> getPaprikaMessages() {
+        return paprikaMessages;
+    }
+
+    public void addPaprikaMessage(PaprikaMessage paprikaMessage) {
+        this.paprikaMessages.add( paprikaMessage);
     }
 }

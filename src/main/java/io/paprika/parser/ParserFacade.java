@@ -38,9 +38,9 @@ public class ParserFacade {
         parser = null;
         ModelGenerator modelGenerator = new ModelGenerator();
         walker.walk(modelGenerator, tree);
-      //  modelGenerator.printModel();
+        //modelGenerator.printModel();
         CallGraphGenerator callGraphGenerator = new CallGraphGenerator(modelGenerator.getClasses(), modelGenerator.getMethods());
-        callGraphGenerator.buildCallGraph();
+        callGraphGenerator.buildGraph();
         callGraphGenerator.printGraph();
 
         return tuc;

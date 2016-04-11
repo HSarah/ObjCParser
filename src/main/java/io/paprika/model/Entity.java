@@ -3,14 +3,14 @@ package io.paprika.model;
 /*import paprika.metrics.Metric;
 import paprika.metrics.UnaryMetric;*/
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Geoffrey Hecht on 20/05/14.
  */
-public abstract class Entity {
+public abstract class Entity extends java.util.Observable {
     protected String name;
+    protected boolean resolved=true;//By default the entity is resolved
   //  protected List<Metric> metrics = new ArrayList<>();
 
     public String getName() {
@@ -36,6 +36,14 @@ public abstract class Entity {
     @Override
     public String toString() {
         return name;
+    }
+
+    public boolean isResolved() {
+        return resolved;
+    }
+
+    public void setResolved(boolean resolved) {
+        this.resolved = resolved;
     }
 
 

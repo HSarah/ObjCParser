@@ -217,15 +217,15 @@ primary_expression:
 	| STRING_LITERAL
 	| ('(' expression ')')
 	| 'self'
-    | 'super'
+        | 'super'
 	| message_expression
 	| selector_expression
 	| protocol_expression
 	| encode_expression
-    | dictionary_expression
-    | array_expression
-    | box_expression
-    | block_expression;
+        | dictionary_expression
+        | array_expression
+        | box_expression
+        | block_expression;
 
 dictionary_pair:
          postfix_expression':'postfix_expression;
@@ -239,7 +239,7 @@ array_expression:
 box_expression:
         '@''('conditional_expression')' |
         '@'constant;
-block_parameters: '(' (type_variable_declarator | type_name | 'void')? (',' (type_variable_declarator | type_name) )* ')';
+block_parameters: '(' (type_variable_declarator | type_name | 'void')? (',' (type_variable_declarator | type_name))* ')';
 
 block_expression:'^' type_specifier? block_parameters? compound_statement;
 
@@ -300,7 +300,7 @@ autorelease_statement:
 
 function_definition : declaration_specifiers? declarator compound_statement ;
 
-declaration : declaration_specifiers init_declarator_list? ';';
+declaration : declaration_specifiers init_declarator_list ';';
 
 declaration_specifiers 
   : (arc_behaviour_specifier | storage_class_specifier | type_specifier | type_qualifier)+ ;
