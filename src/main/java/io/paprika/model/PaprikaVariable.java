@@ -5,6 +5,7 @@ public class PaprikaVariable extends Entity{
     private PaprikaClass paprikaClass;
     private String type;
     private PaprikaModifiers modifier;
+    private boolean isGlobal;
 
     public String getType() {
         return type;
@@ -48,4 +49,20 @@ public class PaprikaVariable extends Entity{
     }
 
     public boolean isProtected(){ return modifier == PaprikaModifiers.PROTECTED; }
+
+    public PaprikaClass getPaprikaClass() {
+        return paprikaClass;
+    }
+
+    public void setPaprikaClass(PaprikaClass paprikaClass) {
+        this.paprikaClass = paprikaClass;
+    }
+
+    public boolean isGlobal() {
+        return isGlobal;
+    }
+
+    public void setGlobal(boolean global) {
+        isGlobal = global;
+    }
 }

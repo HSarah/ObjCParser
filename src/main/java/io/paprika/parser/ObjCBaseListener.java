@@ -966,6 +966,19 @@ public class ObjCBaseListener implements ObjCListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterInstance_struct_declaration(@NotNull ObjCParser.Instance_struct_declarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInstance_struct_declaration(@NotNull ObjCParser.Instance_struct_declarationContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterAnd_expression(@NotNull ObjCParser.And_expressionContext ctx) { }
 	/**
 	 * {@inheritDoc}

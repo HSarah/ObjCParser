@@ -27,6 +27,11 @@ public class PaprikaExternalMethod extends Entity{
     }
 
     public static PaprikaExternalMethod createPaprikaExternalMethod(String name, String returnType,  PaprikaExternalClass paprikaClass) {
+        for(PaprikaExternalMethod externalMethod: paprikaClass.getPaprikaExternalMethods()){
+            if(externalMethod.getName() == name ){//TODO check the number of aguments
+                return externalMethod;
+            }
+        }
         PaprikaExternalMethod paprikaMethod = new PaprikaExternalMethod(name, returnType, paprikaClass);
         paprikaClass.addPaprikaExternalMethod(paprikaMethod);
         return  paprikaMethod;

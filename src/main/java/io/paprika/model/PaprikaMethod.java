@@ -15,6 +15,7 @@ public class PaprikaMethod extends Entity{
     private boolean isFunction;
     private boolean isStatic;
     private ParseTree ctx;
+    private PaprikaModifiers modifier;
     private Set<PaprikaVariable> usedVariables;
     private Set<Entity> calledMethods;
     private List<PaprikaArgument> arguments;
@@ -31,12 +32,17 @@ public class PaprikaMethod extends Entity{
         this.isFunction = isFunction;
         this.isStatic = isStatic;
         ctx = null ;
+        modifier = PaprikaModifiers.PUBLIC; // The default visibility of methods is public
         this.paprikaMessages = new ArrayList<>(0);
     }
 
     public static PaprikaMethod createPaprikaMethod(String name, String returnType,  PaprikaClass paprikaClass, boolean isFunction, boolean isStatic) {
+        for(PaprikaMethod method: paprikaClass.getPaprikaMethods()){
+            if(method.getName() == name){
+                return method;
+            }
+        }
         PaprikaMethod paprikaMethod = new PaprikaMethod(name,  returnType, paprikaClass, isFunction, isStatic);
-
         paprikaClass.addPaprikaMethod(paprikaMethod);
         return  paprikaMethod;
     }

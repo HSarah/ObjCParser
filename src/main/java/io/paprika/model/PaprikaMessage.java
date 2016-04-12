@@ -12,20 +12,19 @@ import java.util.Observer;
 public class PaprikaMessage extends Entity implements Observer{
     private PaprikaMethod callingMethod;
     private Entity calledMethod;//PaprikaMethod or a PaprikaExternalMethod
-    private Entity receiver; // The class of the receiver
-    private Entity reciverEntity; // The entity which received the call
+    private Entity receiverEntity; // The entity which received the call
     private ArrayList<Observer> observers;
 
-    private PaprikaMessage(Entity calledMethod, Entity receiver,Entity receiverEntity, PaprikaMethod callingMethod) {
+    private PaprikaMessage(Entity calledMethod,Entity receiverEntity, PaprikaMethod callingMethod) {
+        this.name = "[ "+receiverEntity+"  "+calledMethod.getName() +" ]";
         this.calledMethod = calledMethod;
-        this.receiver = receiver;
         this.callingMethod = callingMethod;
-        this.reciverEntity = receiverEntity;
+        this.receiverEntity = receiverEntity;
         this.observers = new ArrayList<>(0);
     }
 
-    public static PaprikaMessage createPaprikaMessage(Entity calledMethod, Entity receiver, Entity reciverEntity, PaprikaMethod callingMethod){
-        PaprikaMessage paprikaMessage = new PaprikaMessage(calledMethod,receiver,reciverEntity, callingMethod);
+    public static PaprikaMessage createPaprikaMessage(Entity calledMethod, Entity reciverEntity, PaprikaMethod callingMethod){
+        PaprikaMessage paprikaMessage = new PaprikaMessage(calledMethod,reciverEntity, callingMethod);
         callingMethod.addPaprikaMessage(paprikaMessage);
         return paprikaMessage;
     }
@@ -38,13 +37,6 @@ public class PaprikaMessage extends Entity implements Observer{
         this.calledMethod = calledMethod;
     }
 
-    public Entity getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(Entity receiver) {
-        this.receiver = receiver;
-    }
 
 
     public PaprikaMethod getCallingMethod() {
@@ -56,12 +48,12 @@ public class PaprikaMessage extends Entity implements Observer{
     }
 
     public Entity getReciverEntity() {
-        return reciverEntity;
+        return receiverEntity;
     }
 
     public void setReciverEntity(Entity reciverEntity) {
-        this.reciverEntity = reciverEntity;
-        this.reciverEntity.addObserver(this);
+        this.receiverEntity = reciverEntity;
+        this.receiverEntity.addObserver(this);
     }
 
 

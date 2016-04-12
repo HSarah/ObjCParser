@@ -812,6 +812,17 @@ public interface ObjCListener extends ParseTreeListener {
 	void exitUnary_expression(@NotNull ObjCParser.Unary_expressionContext ctx);
 
 	/**
+	 * Enter a parse tree produced by {@link ObjCParser#instance_struct_declaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterInstance_struct_declaration(@NotNull ObjCParser.Instance_struct_declarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ObjCParser#instance_struct_declaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitInstance_struct_declaration(@NotNull ObjCParser.Instance_struct_declarationContext ctx);
+
+	/**
 	 * Enter a parse tree produced by {@link ObjCParser#and_expression}.
 	 * @param ctx the parse tree
 	 */

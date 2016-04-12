@@ -120,11 +120,10 @@ protocol_name:
 	IDENTIFIER;
 
 instance_variables
-    :   '{' struct_declaration* '}'
-    |   '{' visibility_specification struct_declaration+ '}'
-    |   '{' struct_declaration+ instance_variables '}'
-    |   '{' visibility_specification struct_declaration+ instance_variables '}'
+    :   '{' instance_struct_declaration* '}'
+    |   '{' instance_struct_declaration+ instance_variables '}'
     ;
+instance_struct_declaration: visibility_specification? struct_declaration+ ;
 
 visibility_specification:
 	'@private'

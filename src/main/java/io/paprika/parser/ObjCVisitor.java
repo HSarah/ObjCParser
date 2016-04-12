@@ -523,6 +523,13 @@ public interface ObjCVisitor<T> extends ParseTreeVisitor<T> {
 	T visitUnary_expression(@NotNull ObjCParser.Unary_expressionContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ObjCParser#instance_struct_declaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInstance_struct_declaration(@NotNull ObjCParser.Instance_struct_declarationContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ObjCParser#and_expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

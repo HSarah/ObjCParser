@@ -38,8 +38,10 @@ public class ParserFacade {
         parser = null;
         ModelGenerator modelGenerator = new ModelGenerator();
         walker.walk(modelGenerator, tree);
-        //modelGenerator.printModel();
-        CallGraphGenerator callGraphGenerator = new CallGraphGenerator(modelGenerator.getClasses(), modelGenerator.getMethods());
+        modelGenerator.printModel();
+        modelGenerator.getApp().setPaprikaClasses(modelGenerator.getClasses());
+
+        CallGraphGenerator callGraphGenerator = new CallGraphGenerator(modelGenerator.getApp(), modelGenerator.getMethods());
         callGraphGenerator.buildGraph();
         callGraphGenerator.printGraph();
 

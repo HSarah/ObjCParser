@@ -20,6 +20,12 @@ public class PaprikaExternalVariable extends Entity implements Observer{
         paprikaExternalClass.addObserver(this);
     }
     public static PaprikaExternalVariable createPaprikaExternalVariable(String name,String type, PaprikaExternalClass paprikaExternalClass){
+        //Check if the class already contains the variable
+        for(PaprikaExternalVariable externalVariable: paprikaExternalClass.getPaprikaExternalVariables()){
+            if(externalVariable.getName()== name && externalVariable.getType() == type){
+                return externalVariable;
+            }
+        }
         PaprikaExternalVariable paprikaExternalVariable = new PaprikaExternalVariable(name,type,paprikaExternalClass);
         paprikaExternalClass.addPaprikaExternalVariable(paprikaExternalVariable);
         return paprikaExternalVariable;
