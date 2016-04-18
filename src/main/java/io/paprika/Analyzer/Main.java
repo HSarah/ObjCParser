@@ -13,11 +13,11 @@ public class Main {
     public static void main(String[] args)
     {
         //The file path is hard-coded to avoid reading from System.in which is quite complicated with gradle
-        File f = new File("C:\\Users\\Sarra\\Desktop\\TestFiles\\CellPin.m");
-        ParserFacade t = new ParserFacade();
+        File f = new File("C:\\Users\\Sarra\\Desktop\\TestFiles\\iOS7-compatible");
+        ParserFacade parserFacade = new ParserFacade();
         ObjCParser.Translation_unitContext tuc;
         try {
-            tuc =t.parse(f);
+            parserFacade.parse(f);
            /* AstPrinter printer = new AstPrinter();
             printer.print(tuc);*/
         }catch (IOException ioe)
@@ -25,16 +25,6 @@ public class Main {
             ioe.printStackTrace();
             System.out.println("The cause:"+ ioe.getCause());
         }
-       /* AstPrinter printer = new AstPrinter();
-        try{
-            printer.print(t.parse(f));
-
-        }catch (IOException ioe)
-        {
-
-            ioe.printStackTrace();
-            System.out.println("The cause:"+ ioe.getCause());
-        }*/
 
 
     }

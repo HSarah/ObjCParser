@@ -350,7 +350,7 @@ declarator_suffix : '[' constant_expression? ']'
 parameter_list : parameter_declaration_list ( ',' '...' )? ;
 
 parameter_declaration 
-  : declaration_specifiers (declarator? | abstract_declarator) ;
+  : declaration_specifiers (declarator);// | abstract_declarator) ;
 
 initializer : assignment_expression
 	    | '{' initializer (',' initializer)* ','? '}' ;
