@@ -1,4 +1,4 @@
-package io.paprika.model;
+package io.paprika.neo4j;
 
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -6,21 +6,22 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import java.io.File;
 
 /**
- * Created by Sarra on 24/03/2016.
+ * Created by Geoffrey Hecht on 05/06/14.
  */
-public class DBManager {
-
+public class DatabaseManager {
     private final String DB_PATH;
     private GraphDatabaseService graphDatabaseService;
 
-    public DBManager(String DB_PATH) {
+    public DatabaseManager(String DB_PATH) {
         this.DB_PATH = DB_PATH;
 
     }
+
     public void start(){
+        //graphDatabaseService = new GraphDatabaseFactory().newEmbeddedDatabase( DB_PATH );
         graphDatabaseService = new GraphDatabaseFactory().
-               newEmbeddedDatabaseBuilder( DB_PATH ).
-               newGraphDatabase();
+                newEmbeddedDatabaseBuilder( DB_PATH ).
+                newGraphDatabase();
         registerShutdownHook(graphDatabaseService);
     }
 

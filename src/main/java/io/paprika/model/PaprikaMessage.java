@@ -12,14 +12,15 @@ import java.util.Observer;
 public class PaprikaMessage extends Entity implements Observer{
     private PaprikaMethod callingMethod;
     private Entity calledMethod;//PaprikaMethod or a PaprikaExternalMethod
-    private Entity receiverEntity; // The entity which received the call
+    //private Entity receiverEntity; // The entity which received the call
     private ArrayList<Observer> observers;
 
     private PaprikaMessage(Entity calledMethod,Entity receiverEntity, PaprikaMethod callingMethod) {
         this.name = "[ "+receiverEntity+"  "+calledMethod.getName() +" ]";
         this.calledMethod = calledMethod;
         this.callingMethod = callingMethod;
-        this.receiverEntity = receiverEntity;
+        //this.receiverEntity = receiverEntity;
+        receiverEntity.addObserver(this);
         this.observers = new ArrayList<>(0);
     }
 
@@ -47,14 +48,14 @@ public class PaprikaMessage extends Entity implements Observer{
         this.callingMethod = callingMethod;
     }
 
-    public Entity getReciverEntity() {
+   /* public Entity getReciverEntity() {
         return receiverEntity;
     }
 
     public void setReciverEntity(Entity reciverEntity) {
         this.receiverEntity = reciverEntity;
         this.receiverEntity.addObserver(this);
-    }
+    }*/
 
 
 

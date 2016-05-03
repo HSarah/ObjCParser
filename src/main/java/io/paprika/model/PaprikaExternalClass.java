@@ -11,7 +11,7 @@ public class PaprikaExternalClass extends Entity {
     private String parentName;
     private Set<PaprikaExternalMethod> paprikaExternalMethods;
     private ArrayList<PaprikaExternalVariable> paprikaExternalVariables;
-    private ArrayList<Observer> observers;
+
 
 
     private PaprikaExternalClass(String name, PaprikaApp paprikaApp) {
@@ -19,14 +19,22 @@ public class PaprikaExternalClass extends Entity {
         this.paprikaApp = paprikaApp;
         this.paprikaExternalMethods  = new HashSet<>();
         this.paprikaExternalVariables = new ArrayList<>();
-        this.observers = new ArrayList<>(0);
     }
 
     public static PaprikaExternalClass createPaprikaExternalClass(String name, PaprikaApp paprikaApp) {
+        try {
+            if(name.equals("YES")){
+                throw new Exception("YES found");
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
         PaprikaExternalClass paprikaClass = new PaprikaExternalClass(name, paprikaApp);
         paprikaApp.addPaprikaExternalClass(paprikaClass);
         return paprikaClass;
     }
+
 
     public void addPaprikaExternalMethod(PaprikaExternalMethod paprikaMethod){
         paprikaExternalMethods.add(paprikaMethod);
@@ -59,22 +67,6 @@ public class PaprikaExternalClass extends Entity {
         this.parentName = parentName;
     }
 
-    //Observable
-    @Override
-    public synchronized void addObserver(Observer o) {
-        this.observers.add(o);
-    }
 
-    @Override
-    public synchronized void deleteObserver(Observer o) {
-        this.observers.remove(o);
-    }
-
-    @Override
-    public void notifyObservers(Object arg) {
-        for(Observer o : this.observers){
-            o.update(this,arg);
-        }
-    }
 
 }

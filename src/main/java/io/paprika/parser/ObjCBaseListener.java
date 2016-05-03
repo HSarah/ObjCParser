@@ -875,6 +875,19 @@ public class ObjCBaseListener implements ObjCListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterArgument_list(@NotNull ObjCParser.Argument_listContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArgument_list(@NotNull ObjCParser.Argument_listContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterCast_expression(@NotNull ObjCParser.Cast_expressionContext ctx) { }
 	/**
 	 * {@inheritDoc}

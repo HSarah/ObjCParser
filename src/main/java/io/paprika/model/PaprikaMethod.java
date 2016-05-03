@@ -21,6 +21,8 @@ public class PaprikaMethod extends Entity{
     private List<PaprikaArgument> arguments;
     private PaprikaStatement statement;
     private ArrayList<PaprikaMessage> paprikaMessages;
+    private int numberOfLines;
+    private int cyclomaticComplexity;
 
     private PaprikaMethod(String name, String returnType, PaprikaClass paprikaClass, boolean isFunction, boolean isStatic) {
         this.setName(name);
@@ -34,6 +36,8 @@ public class PaprikaMethod extends Entity{
         ctx = null ;
         modifier = PaprikaModifiers.PUBLIC; // The default visibility of methods is public
         this.paprikaMessages = new ArrayList<>(0);
+        numberOfLines= 0 ;
+        cyclomaticComplexity=0;
     }
 
     public static PaprikaMethod createPaprikaMethod(String name, String returnType,  PaprikaClass paprikaClass, boolean isFunction, boolean isStatic) {
@@ -68,7 +72,14 @@ public class PaprikaMethod extends Entity{
         return this.usedVariables;
     }
 
-    public void callMethod(Entity paprikaMethod) { calledMethods.add(paprikaMethod);}
+    public void callMethod(Entity paprikaMethod) {
+        if(paprikaMethod instanceof PaprikaMethod){
+            if(paprikaMethod==this){
+                return;
+            }
+        }
+        calledMethods.add(paprikaMethod);
+    }
 
     public Set<Entity> getCalledMethods() { return this.calledMethods; }
 
@@ -129,5 +140,29 @@ public class PaprikaMethod extends Entity{
 
     public void addPaprikaMessage(PaprikaMessage paprikaMessage) {
         this.paprikaMessages.add( paprikaMessage);
+    }
+
+    public PaprikaModifiers getModifier() {
+        return modifier;
+    }
+
+    public void setModifier(PaprikaModifiers modifier) {
+        this.modifier = modifier;
+    }
+
+    public int getNumberOfLines() {
+        return numberOfLines;
+    }
+
+    public void setNumberOfLines(int numberOfLines) {
+        this.numberOfLines = numberOfLines;
+    }
+
+    public int getCyclomaticComplexity() {
+        return cyclomaticComplexity;
+    }
+
+    public void setCyclomaticComplexity(int cyclomaticComplexity) {
+        this.cyclomaticComplexity = cyclomaticComplexity;
     }
 }

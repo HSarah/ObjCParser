@@ -17,7 +17,6 @@ public class PaprikaExternalVariable extends Entity implements Observer{
         this.type = type;
         this.paprikaExternalClass = paprikaExternalClass;
         observers = new ArrayList<>(0);
-        paprikaExternalClass.addObserver(this);
     }
     public static PaprikaExternalVariable createPaprikaExternalVariable(String name,String type, PaprikaExternalClass paprikaExternalClass){
         //Check if the class already contains the variable
@@ -28,9 +27,22 @@ public class PaprikaExternalVariable extends Entity implements Observer{
         }
         PaprikaExternalVariable paprikaExternalVariable = new PaprikaExternalVariable(name,type,paprikaExternalClass);
         paprikaExternalClass.addPaprikaExternalVariable(paprikaExternalVariable);
+        paprikaExternalClass.addObserver(paprikaExternalVariable);
         return paprikaExternalVariable;
     }
 
+    public static PaprikaExternalVariable createPaprikaExternalVariable(String name,String type, PaprikaExternalClass paprikaExternalClass, Entity receiver){
+        //Check if the class already contains the variable
+        for(PaprikaExternalVariable externalVariable: paprikaExternalClass.getPaprikaExternalVariables()){
+            if(externalVariable.getName()== name && externalVariable.getType() == type){
+                return externalVariable;
+            }
+        }
+        PaprikaExternalVariable paprikaExternalVariable = new PaprikaExternalVariable(name,type,paprikaExternalClass);
+        paprikaExternalClass.addPaprikaExternalVariable(paprikaExternalVariable);
+        receiver.addObserver(paprikaExternalVariable);
+        return paprikaExternalVariable;
+    }
 
     public String getType() {
         return type;

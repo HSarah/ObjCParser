@@ -546,6 +546,14 @@ public class ObjCBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements O
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitArgument_list(@NotNull ObjCParser.Argument_listContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitCast_expression(@NotNull ObjCParser.Cast_expressionContext ctx) { return visitChildren(ctx); }
 
 	/**

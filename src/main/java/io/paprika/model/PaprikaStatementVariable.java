@@ -6,10 +6,11 @@ package io.paprika.model;
 public class PaprikaStatementVariable extends Entity {
 
     private String type;
-
-    private PaprikaStatementVariable(String name, String type) {
+    private PaprikaStatement paprikaStatement;
+    private PaprikaStatementVariable(String name, String type, PaprikaStatement paprikaStatement) {
         this.type = type;
         this.name = name;
+        this.paprikaStatement = paprikaStatement;
 
     }
 
@@ -24,7 +25,7 @@ public class PaprikaStatementVariable extends Entity {
             }
         }
         if(exists == false){
-            paprikaVariable= new PaprikaStatementVariable(name, type);
+            paprikaVariable= new PaprikaStatementVariable(name, type, paprikaStatement);
             paprikaStatement.addVariable(paprikaVariable);
         }
 

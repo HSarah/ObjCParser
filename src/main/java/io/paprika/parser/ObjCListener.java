@@ -735,6 +735,17 @@ public interface ObjCListener extends ParseTreeListener {
 	void exitRelational_expression(@NotNull ObjCParser.Relational_expressionContext ctx);
 
 	/**
+	 * Enter a parse tree produced by {@link ObjCParser#argument_list}.
+	 * @param ctx the parse tree
+	 */
+	void enterArgument_list(@NotNull ObjCParser.Argument_listContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ObjCParser#argument_list}.
+	 * @param ctx the parse tree
+	 */
+	void exitArgument_list(@NotNull ObjCParser.Argument_listContext ctx);
+
+	/**
 	 * Enter a parse tree produced by {@link ObjCParser#cast_expression}.
 	 * @param ctx the parse tree
 	 */

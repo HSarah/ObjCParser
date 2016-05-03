@@ -18,6 +18,7 @@ public class PaprikaClass extends Entity{
     private Set<PaprikaClass> interfaces;
     private boolean isInterface;
     private ArrayList<String> interfacesNames;
+    private PaprikaModifiers modifier ;
 
 
 
@@ -42,13 +43,15 @@ public class PaprikaClass extends Entity{
         this.paprikaApp = paprikaApp;
         this.complexity = 0;
         this.children = 0;
-        this.paprikaMethods  = new HashSet<>();
-        this.paprikaVariables = new HashSet<>();
+        this.paprikaMethods  = new HashSet<>(0);
+        this.paprikaVariables = new HashSet<>(0);
         this.coupled = new HashSet<>();
         this.interfaces = new HashSet<>();
         this.interfacesNames = new ArrayList<>(0);
         this.isInterface = false;
         this.parentName = null;
+        this.modifier = PaprikaModifiers.PUBLIC; // The default visibility is Public
+        //TODO manage the private class case
     }
 
     public static PaprikaClass createPaprikaClass(String name, PaprikaApp paprikaApp) {
@@ -91,7 +94,12 @@ public class PaprikaClass extends Entity{
 
     public int getChildren() { return children; }
 
-    public void coupledTo(PaprikaClass paprikaClass){ coupled.add(paprikaClass);}
+    public void coupledTo(PaprikaClass paprikaClass){
+        if(paprikaClass!= this)
+        {
+            coupled.add(paprikaClass);
+        }
+    }
 
     public void implement(PaprikaClass paprikaClass){ interfaces.add(paprikaClass);}
 
@@ -144,5 +152,14 @@ public class PaprikaClass extends Entity{
 
     public void setInterface(boolean anInterface) {
         isInterface = anInterface;
+    }
+
+
+    public PaprikaModifiers getModifier() {
+        return modifier;
+    }
+
+    public void setModifier(PaprikaModifiers modifier) {
+        this.modifier = modifier;
     }
 }

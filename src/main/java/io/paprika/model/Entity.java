@@ -3,6 +3,9 @@ package io.paprika.model;
 /*import paprika.metrics.Metric;
 import paprika.metrics.UnaryMetric;*/
 
+import io.paprika.metrics.Metric;
+import io.paprika.metrics.UnaryMetric;
+
 import java.util.*;
 
 /**
@@ -10,8 +13,8 @@ import java.util.*;
  */
 public abstract class Entity extends java.util.Observable {
     protected String name;
-    protected boolean resolved=true;//By default the entity is resolved
-  //  protected List<Metric> metrics = new ArrayList<>();
+    private ArrayList<Observer> observers = new ArrayList<>(0);
+    protected List<Metric> metrics = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -21,7 +24,7 @@ public abstract class Entity extends java.util.Observable {
         this.name = name;
     }
 
-  /*  public List<Metric> getMetrics() {
+    public List<Metric> getMetrics() {
         return metrics;
     }
 
@@ -31,20 +34,36 @@ public abstract class Entity extends java.util.Observable {
 
     public void addMetric(UnaryMetric unaryMetric){
         this.metrics.add(unaryMetric);
-    }*/
+    }
 
     @Override
     public String toString() {
         return name;
     }
 
-    public boolean isResolved() {
-        return resolved;
+    //Observable
+    @Override
+    public synchronized void addObserver(Observer o) {
+        this.observers.add(o);
     }
 
-    public void setResolved(boolean resolved) {
-        this.resolved = resolved;
+    @Override
+    public synchronized void deleteObserver(Observer o) {
+        this.observers.remove(o);
     }
 
+    @Override
+    public void notifyObservers(Object arg) {
+        for(Observer o : this.observers){
+            o.update(this,arg);
+        }
+    }
 
+    public ArrayList<Observer> getObservers() {
+        return observers;
+    }
+
+    public void setObservers(ArrayList<Observer> observers) {
+        this.observers = observers;
+    }
 }

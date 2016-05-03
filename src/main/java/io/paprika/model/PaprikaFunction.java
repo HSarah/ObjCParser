@@ -9,6 +9,7 @@ public class PaprikaFunction extends Entity {
 
 
     private PaprikaFunction(String name , String returnType, PaprikaApp paprikaApp) {
+        this.name = name;
         this.paprikaApp = paprikaApp;
         this.returnType = returnType;
     }

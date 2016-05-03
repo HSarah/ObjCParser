@@ -474,6 +474,13 @@ public interface ObjCVisitor<T> extends ParseTreeVisitor<T> {
 	T visitRelational_expression(@NotNull ObjCParser.Relational_expressionContext ctx);
 
 	/**
+	 * Visit a parse tree produced by {@link ObjCParser#argument_list}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitArgument_list(@NotNull ObjCParser.Argument_listContext ctx);
+
+	/**
 	 * Visit a parse tree produced by {@link ObjCParser#cast_expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
