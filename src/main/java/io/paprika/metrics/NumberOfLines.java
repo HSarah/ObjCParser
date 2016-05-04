@@ -1,5 +1,6 @@
 package io.paprika.metrics;
 
+import io.paprika.model.Entity;
 import io.paprika.model.PaprikaMethod;
 
 /**
@@ -7,13 +8,13 @@ import io.paprika.model.PaprikaMethod;
  */
 public class NumberOfLines extends UnaryMetric<Integer> {
 
-    private NumberOfLines(PaprikaMethod paprikaMethod, int value) {
+    private NumberOfLines(Entity paprikaMethod, int value) {
         this.value = value;
         this.entity = paprikaMethod;
         this.name = "number_of_lines";
     }
 
-    public static NumberOfLines createNumberOfLines(PaprikaMethod paprikaMethod, int value) {
+    public static NumberOfLines createNumberOfLines(Entity paprikaMethod, int value) {
         NumberOfLines numberOfInstructions = new NumberOfLines(paprikaMethod, value);
         numberOfInstructions.updateEntity();
         return numberOfInstructions;

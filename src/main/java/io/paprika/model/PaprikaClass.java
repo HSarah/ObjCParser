@@ -19,6 +19,9 @@ public class PaprikaClass extends Entity{
     private boolean isInterface;
     private ArrayList<String> interfacesNames;
     private PaprikaModifiers modifier ;
+    private boolean isAppDelegate;
+    private boolean isViewController;
+    private int numberOfLinesOfCode;
 
 
 
@@ -51,7 +54,20 @@ public class PaprikaClass extends Entity{
         this.isInterface = false;
         this.parentName = null;
         this.modifier = PaprikaModifiers.PUBLIC; // The default visibility is Public
-        //TODO manage the private class case
+        numberOfLinesOfCode=0;
+        //check if it's a ViewController or an AppDelegate
+        this.isViewController=false;
+        this.isViewController=false;
+        String lowerCaseName = name.toLowerCase();
+        if(name.contains("viewcontroller")){
+            this.isViewController=true;
+        }else{
+            if(lowerCaseName.contains("appdelegate")){
+                this.isAppDelegate=true;
+            }
+        }
+
+        //TODO add the private class case
     }
 
     public static PaprikaClass createPaprikaClass(String name, PaprikaApp paprikaApp) {
@@ -161,5 +177,21 @@ public class PaprikaClass extends Entity{
 
     public void setModifier(PaprikaModifiers modifier) {
         this.modifier = modifier;
+    }
+
+    public int getNumberOfLinesOfCode() {
+        return numberOfLinesOfCode;
+    }
+
+    public void setNumberOfLinesOfCode(int numberOfLinesOfCode) {
+        this.numberOfLinesOfCode = numberOfLinesOfCode;
+    }
+
+    public boolean isAppDelegate() {
+        return isAppDelegate;
+    }
+
+    public boolean isViewController() {
+        return isViewController;
     }
 }

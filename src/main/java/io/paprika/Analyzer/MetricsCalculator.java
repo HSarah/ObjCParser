@@ -10,9 +10,7 @@ import java.util.HashMap;
  */
 public class MetricsCalculator {
 
-    public void calculateMetrics(PaprikaApp app){
 
-    }
 
     public void calculateAppMetrics(PaprikaApp app)
     {
@@ -37,7 +35,10 @@ public class MetricsCalculator {
         NumberOfImplementedInterfaces.createNumberOfImplementedInterfaces(paprikaClass,
                 paprikaClass.getInterfaces().size());
         NumberOfAttributes.createNumberOfAttributes(paprikaClass, paprikaClass.getPaprikaVariables().size());
-        IsInterface.createIsInterface(paprikaClass, paprikaClass.isInterface());
+        if(paprikaClass.isInterface())
+        {
+            IsInterface.createIsInterface(paprikaClass, true);
+        }
         LackofCohesionInMethods.createLackofCohesionInMethods(paprikaClass);
         CouplingBetweenObjects.createCouplingBetweenObjects(paprikaClass);
         NumberOfChildren.createNumberOfChildren(paprikaClass);
@@ -60,14 +61,10 @@ public class MetricsCalculator {
         }
         if(paprikaMethod.getPaprikaClass().isInterface()){
             IsAbstract.createIsAbstract(paprikaMethod, true);
-        }else{
-            IsAbstract.createIsAbstract(paprikaMethod,false);
         }
         //Checking if the method is a constructor
         if(paprikaMethod.getName().equals("init") || paprikaMethod.getName().equals("alloc")){
             IsInit.createIsInit(paprikaMethod, true);
-        }else{
-            IsInit.createIsInit(paprikaMethod, false);
         }
         String methodName;
         boolean isSetter =false;
@@ -85,23 +82,21 @@ public class MetricsCalculator {
         for(PaprikaVariable paprikaVariable: paprikaMethod.getPaprikaClass().getPaprikaVariables()){
 
             if(methodName.equals(paprikaVariable.getName())){
-                isGetter=true;
+                IsGetter.createIsGetter(paprikaMethod, isGetter);
                 break;
             }
 
             if(methodName.equals(paprikaVariable.getName())){
-                isSetter=true;
+                IsSetter.createIsSetter(paprikaMethod, isSetter);
                 break;
             }
 
         }
-        IsSetter.createIsSetter(paprikaMethod, isSetter);
-        IsGetter.createIsGetter(paprikaMethod, isGetter);
+
+
 
         if(paprikaMethod.getStatic()){
             IsStatic.createIsStatic(paprikaMethod,true);
-        }else{
-            IsStatic.createIsStatic(paprikaMethod,false);
         }
         NumberOfCallers.createNumberOfCallers(paprikaMethod,0);
         NumberOfLines.createNumberOfLines(paprikaMethod,paprikaMethod.getNumberOfLines());

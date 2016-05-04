@@ -43,6 +43,7 @@ public class ModelGenerator extends ObjCBaseListener {
         if(ctx.superclass_name()!=null){
             c.setParentName(ctx.superclass_name().IDENTIFIER().getText());
         }
+        c.setNumberOfLinesOfCode(ctx.getStop().getLine()-ctx.getStart().getLine());
 
     }
 
@@ -529,14 +530,14 @@ public class ModelGenerator extends ObjCBaseListener {
         if (ctx.category_name()!= null) {
             className = className.concat("+"+ctx.category_name().IDENTIFIER().getText());
         }
-
-        insertClass(className);
+        PaprikaClass c=insertClass(className);
+        c.setNumberOfLinesOfCode(ctx.getStop().getLine()-ctx.getStart().getLine());
     }
 
     @Override public void enterProtocol_declaration(@NotNull ObjCParser.Protocol_declarationContext ctx) {
         PaprikaClass c = insertClass(ctx.protocol_name().IDENTIFIER().getText());
         c.setInterface(true);
-
+        c.setNumberOfLinesOfCode(ctx.getStop().getLine()-ctx.getStart().getLine());
         //handling the protocols
         if(ctx.protocol_reference_list() != null){
             handleProtocols(ctx.protocol_reference_list());

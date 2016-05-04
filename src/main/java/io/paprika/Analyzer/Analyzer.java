@@ -1,75 +1,124 @@
 package io.paprika.analyzer;
 
-import io.paprika.model.*;
-
-import java.util.ArrayList;
+import io.paprika.model.PaprikaApp;
+import io.paprika.neo4j.ModelToGraph;
+import io.paprika.parser.ObjCLexer;
+import io.paprika.parser.ObjCParser;
+import io.paprika.parser.ThrowingErrorListener;
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.util.HashMap;
 
 /**
- * Created by Sarra on 24/03/2016.
+ * Created by Sarra on 27/02/2016.
  */
+
 public class Analyzer {
-    PaprikaApp app;
-    private ArrayList<PaprikaClass> classes;
-    private ArrayList<PaprikaExternalClass> externalClasses;
-    private ArrayList<PaprikaMethod> methods;
-    private ArrayList<PaprikaVariable> variables;
-    private ArrayList<PaprikaArgument> arguments;
-    private ArrayList<PaprikaExternalMethod> externalMethods;
-    private ArrayList<PaprikaExternalArgument> externalArguments;
-    PaprikaClass currentClass;
-    PaprikaMethod currentMethod;
 
-    public Analyzer() {
-        this.app = PaprikaApp.createPaprikaApp("UnknownApp");
-        this.classes = new ArrayList<PaprikaClass>();
-        this.methods = new ArrayList<PaprikaMethod>();
-        this.variables = new ArrayList<PaprikaVariable>();
-        this.arguments = new ArrayList<PaprikaArgument>();
-        this.externalArguments = new ArrayList<PaprikaExternalArgument>();
-        this.externalClasses = new ArrayList<PaprikaExternalClass>();
-        this.externalMethods = new ArrayList<PaprikaExternalMethod>();
-        currentClass = null;
-        currentMethod = null;
-
+    HashMap<String,String> filesContents;
+    public static String fileName =null ;
+    HashMap<String,String> headersContents;
+    public Analyzer(){
+        filesContents = new HashMap<>();
+        headersContents = new HashMap<>();
+    }
+    private static String readFile(File file, Charset encoding) throws IOException {
+        byte[] encoded = Files.readAllBytes(file.toPath());
+        return new String(encoded, encoding);
     }
 
-    public void insertClass(String name) {
+    public void parse(final File folder) throws IOException {
+        ObjCLexer lexer;
+        CommonTokenStream tokens;
+        ObjCParser parser;
+        ParseTreeWalker walker;
+        ParseTree tree;
+        PaprikaApp app =PaprikaApp.createPaprikaApp(folder.getName());
+        ModelGenerator modelGenerator = new ModelGenerator(app);
+        listFilesForFolder(folder);
+        String fileContent;
+        AstPrinter astPrinter = new AstPrinter();
+        //analyzing the .m files
+        for(String  name: this.filesContents.keySet()){
+            fileName = name;
+            fileContent = this.filesContents.get(name);
+            lexer = new ObjCLexer(new ANTLRInputStream(fileContent));
+            tokens = new CommonTokenStream(lexer);
+            parser = new ObjCParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+           // try{
+                tree =parser.translation_unit();
+                //astPrinter.print((RuleContext) tree);
+                walker = new ParseTreeWalker();
+                walker.walk(modelGenerator, tree);
+         /*   }catch(Exception e){
+                System.out.println("The file : "+ name);
+                System.out.println(e.getMessage());
+            }*/
 
-        PaprikaClass c = PaprikaClass.createPaprikaClass(name, app);
-        classes.add(c);
-        currentClass = c;
-    }
-
-    public void insertMethod(String name,  String returnType, boolean isFunction, boolean isStatic) {
-        PaprikaMethod m = PaprikaMethod.createPaprikaMethod(name, returnType, currentClass, isFunction, isStatic);
-        methods.add(m);
-        currentMethod = m;
-    }
-
-    /*public void insertArgument(String name, int position)
-    {
-        PaprikaArgument.createPaprikaArgument(name, position, currentMethod);
-       // System.out.println("parameter inserted !!");
-
-    }*/
-
-    public void printModel()
-    {
-        for(PaprikaClass c: classes){
-            System.out.println("La classe "+ c.getName());
-            for(PaprikaMethod m : c.getPaprikaMethods())
-            {
-                System.out.println("Methode: "+m.getName()+" RType: "
-                        + m.getReturnType() + " fonction: "+ m.getFunction()+
-                        " statique: "+ m.getStatic() );
-                for(PaprikaArgument arg : m.getArguments())
-                {
-                    System.out.println("----Arg: " + arg.getArgumentName()+" type: "+arg.getName() + " position: "+arg.getPosition());
+            //modelGenerator.printModel();
+            modelGenerator.reInit();
+        }
+        //analyzing the .h files
+        for(String name : this.headersContents.keySet()){
+            fileContent = this.headersContents.get(name);
+            fileName = name;
+           // try{
+                lexer = new ObjCLexer(new ANTLRInputStream(fileContent));
+                tokens = new CommonTokenStream(lexer);
+                parser = new ObjCParser(tokens);
+                 parser.removeErrorListeners();
+                parser.addErrorListener(ThrowingErrorListener.INSTANCE);
+                tree =parser.translation_unit();
+                walker = new ParseTreeWalker();
+                walker.walk(modelGenerator, tree);
+           /* }catch(ParseCancellationException e){
+                System.out.println("The file : "+ name);
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+                if (e.getCause() instanceof RecognitionException) {
+                    RecognitionException re = (RecognitionException)e.getCause();
+                    ParserRuleContext context = (ParserRuleContext)re.getCtx();
+                    System.out.println("TEXT : "+context.getText());
+                    re.printStackTrace();
                 }
+            }*/
+
+            modelGenerator.reInit();
+        }
+
+        GraphsGenerator graphsGenerator = new GraphsGenerator(modelGenerator.getApp());
+        graphsGenerator.buildGraph();
+        //graphsGenerator.printGraph();
+        modelGenerator.printModel();
+        ModelToGraph modelToGraph = new ModelToGraph("BDD-test");
+        modelToGraph.insertApp(modelGenerator.getApp());
+
+
+    }
+
+
+
+    public void listFilesForFolder(final File folder) throws IOException {
+        for (final File fileEntry : folder.listFiles()) {
+            if (fileEntry.isDirectory()) {
+                listFilesForFolder(fileEntry);
+            } else {
+                if(fileEntry.getName().endsWith(".h")){
+                    System.out.println(".h: "+fileEntry.getName());
+                    headersContents.put(fileEntry.getName(),readFile(new File(fileEntry.getPath()), Charset.forName("UTF-8")) );
+                }else if(fileEntry.getName().endsWith(".m")){
+                    System.out.println(".m: "+fileEntry.getName());
+                    filesContents.put(fileEntry.getName(),readFile(new File(fileEntry.getPath()), Charset.forName("UTF-8")) );
+                }
+
             }
         }
     }
-
 }
-
-
