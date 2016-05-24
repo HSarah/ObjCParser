@@ -17,18 +17,24 @@ import java.util.Map;
  * Created by Geoffrey Hecht on 14/08/15.
  */
 public class BLOBQuery extends FuzzyQuery{
-    protected static double high_lcom = 25;
-    protected static double veryHigh_lcom = 40;
-    protected static double high_noa = 8.5;
+   // protected static double high_lcom = 25;
+   // protected static double veryHigh_lcom = 40;
+   /* protected static double high_noa = 8.5;
     protected static double veryHigh_noa = 13;
     protected static double high_nom = 14.5;
     protected static double veryHigh_nom = 22;
-
-
+    protected static double veryLow_camc =2;
+    protected static double low_camc = 3;*/
+    protected static double high_noa = 10;
+    protected static double veryHigh_noa = 12;
+    protected static double high_nom = 10;
+    protected static double veryHigh_nom = 12;
+    protected static double veryLow_camc =0.4;
+    protected static double low_camc = 0.2;
 
     private BLOBQuery(QueryEngine queryEngine) {
         super(queryEngine);
-        fclFile = "/Blob.fcl";
+        fclFile = "fcl/Blob.fcl";
     }
 
     public static BLOBQuery createBLOBQuery(QueryEngine queryEngine) {
@@ -38,7 +44,7 @@ public class BLOBQuery extends FuzzyQuery{
     public void execute(boolean details) throws CypherException, IOException {
         Result result;
         try (Transaction ignored = graphDatabaseService.beginTx()) {
-            String query = "MATCH (cl:Class) WHERE cl.lack_of_cohesion_in_methods >" + veryHigh_lcom + " AND cl.number_of_methods > " + veryHigh_nom + " AND cl.number_of_attributes > " + veryHigh_noa + " RETURN cl.app_key as app_key";
+            String query = "MATCH (cl:Class) WHERE cl.cohesion_among_methods_of_class <" + veryLow_camc + " AND cl.number_of_methods > " + veryHigh_nom + " AND cl.number_of_attributes > " + veryHigh_noa + " RETURN cl.app_key as app_key";
             if(details){
                 query += ",cl.name as full_name";
             }else{
@@ -52,16 +58,18 @@ public class BLOBQuery extends FuzzyQuery{
     public void executeFuzzy(boolean details) throws CypherException, IOException {
             Result result;
             try (Transaction ignored = graphDatabaseService.beginTx()) {
-                String query = "MATCH (cl:Class) WHERE cl.lack_of_cohesion_in_methods >" + high_lcom + " AND cl.number_of_methods > " + high_nom + " AND cl.number_of_attributes > " + high_noa + " RETURN cl.app_key as app_key,cl.lack_of_cohesion_in_methods as lack_of_cohesion_in_methods,cl.number_of_methods as number_of_methods, cl.number_of_attributes as number_of_attributes";
+                System.out.println("1st");
+                String query = "MATCH (cl:Class) WHERE cl.cohesion_among_methods_of_class < " + low_camc + " AND cl.number_of_methods > " + high_nom + " AND cl.number_of_attributes > " + high_noa + " RETURN cl.app_key as app_key,cl.cohesion_among_methods_of_class as cohesion_among_methods_of_class,cl.number_of_methods as number_of_methods, cl.number_of_attributes as number_of_attributes";
                 if(details){
                     query += ",cl.name as full_name";
                 }
                 result = graphDatabaseService.execute(query);
                 List<String> columns = new ArrayList<>(result.columns());
                 columns.add("fuzzy_value");
-                int lcom,noa,nom;
+                int noa,nom; double camc;
                 List<Map> fuzzyResult = new ArrayList<>();
                 File fcf = new File(fclFile);
+
                 //We look if the file is in a directory otherwise we look inside the jar
                 FIS fis;
                 if(fcf.exists() && !fcf.isDirectory()){
@@ -70,15 +78,20 @@ public class BLOBQuery extends FuzzyQuery{
                     fis = FIS.load(getClass().getResourceAsStream(fclFile),false);
                 }
                 FunctionBlock fb = fis.getFunctionBlock(null);
+                System.out.println("Helloo");
                 while(result.hasNext()){
                     HashMap res = new HashMap(result.next());
-                    lcom = (int) res.get("lack_of_cohesion_in_methods");
+                    System.out.println("pss1");
                     noa = (int) res.get("number_of_attributes");
+                    System.out.println("pss");
+                    Object o= res.get("cohesion_among_methods_of_class");
+                    camc =(float) o;
                     nom = (int) res.get("number_of_methods");
-                    if(lcom >= veryHigh_lcom && noa >= veryHigh_noa && nom >= veryHigh_nom){
+
+                    if(camc <= veryLow_camc && noa >= veryHigh_noa && nom >= veryHigh_nom){
                         res.put("fuzzy_value", 1);
                     }else {
-                        fb.setVariable("lack_of_cohesion_in_methods",lcom);
+                        fb.setVariable("cohesion_among_methods_of_class",camc);
                         fb.setVariable("number_of_attributes",noa);
                         fb.setVariable("number_of_methods",nom);
                         fb.evaluate();

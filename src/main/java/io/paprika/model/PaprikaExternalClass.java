@@ -22,14 +22,12 @@ public class PaprikaExternalClass extends Entity {
     }
 
     public static PaprikaExternalClass createPaprikaExternalClass(String name, PaprikaApp paprikaApp) {
-        try {
-            if(name.equals("YES")){
-                throw new Exception("YES found");
+        //Check if the class exists already
+        for(PaprikaExternalClass c : paprikaApp.getPaprikaExternalClasses()){
+            if(c.getName().equals(name)){
+                return c;
             }
-        }catch(Exception e){
-            e.printStackTrace();
         }
-
         PaprikaExternalClass paprikaClass = new PaprikaExternalClass(name, paprikaApp);
         paprikaApp.addPaprikaExternalClass(paprikaClass);
         return paprikaClass;

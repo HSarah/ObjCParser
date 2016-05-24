@@ -12,7 +12,7 @@ public class MetricsCalculator {
 
 
 
-    public void calculateAppMetrics(PaprikaApp app)
+    public static void calculateAppMetrics(PaprikaApp app)
     {
         NumberOfClasses.createNumberOfClasses(app, app.getPaprikaClasses().size());
         int numberOfInterfaces=0;
@@ -25,12 +25,22 @@ public class MetricsCalculator {
         for(PaprikaClass paprikaClass: app.getPaprikaClasses()){
             calculateClassMetrics(paprikaClass);
         }
-
+        System.out.println("before Graph");
         calculateGraphMetrics(app);
+        System.out.println("after Graph");
     }
 
 
-    public void calculateClassMetrics(PaprikaClass paprikaClass){
+    public static void calculateClassMetrics(PaprikaClass paprikaClass){
+        if(paprikaClass.isViewController())
+        {
+            IsViewController.createIsViewController(paprikaClass);
+        }else if(paprikaClass.isInteractor()){
+            IsInteractor.createIsInteractor(paprikaClass);
+        }else if(paprikaClass.isRouter()){
+            IsRouter.createIsRouter(paprikaClass);
+        }
+
         NumberOfMethods.createNumberOfMethods(paprikaClass, paprikaClass.getPaprikaMethods().size());
         NumberOfImplementedInterfaces.createNumberOfImplementedInterfaces(paprikaClass,
                 paprikaClass.getInterfaces().size());
@@ -39,17 +49,20 @@ public class MetricsCalculator {
         {
             IsInterface.createIsInterface(paprikaClass, true);
         }
-        LackofCohesionInMethods.createLackofCohesionInMethods(paprikaClass);
+        CAMCMetric.createCAMCMetric(paprikaClass);
+        System.out.println("after CAMC");
+        NumberOfLines.createNumberOfLines(paprikaClass, paprikaClass.getNumberOfLinesOfCode());
         CouplingBetweenObjects.createCouplingBetweenObjects(paprikaClass);
         NumberOfChildren.createNumberOfChildren(paprikaClass);
         for(PaprikaMethod paprikaMethod: paprikaClass.getPaprikaMethods()){
             calculateMethodMetrics(paprikaMethod);
         }
+        System.out.println("after Methods");
         //this instruction must be called after the loop
         ClassComplexity.createClassComplexity(paprikaClass);
     }
 
-    public void calculateMethodMetrics(PaprikaMethod paprikaMethod){
+    public static void calculateMethodMetrics(PaprikaMethod paprikaMethod){
         NumberOfParameters.createNumberOfParameters(paprikaMethod, paprikaMethod.getArguments().size());
         if(!paprikaMethod.getFunction() && ! paprikaMethod.getPaprikaClass().isInterface()){
             int n = calculateNumberOfDeclaredLocals(paprikaMethod.getStatement());
@@ -59,40 +72,47 @@ public class MetricsCalculator {
             NumberOfDirectCalls.createNumberOfDirectCalls(paprikaMethod,0);
             NumberOfDeclaredLocals.createNumberOfDeclaredLocals(paprikaMethod,0);
         }
-        if(paprikaMethod.getPaprikaClass().isInterface()){
-            IsAbstract.createIsAbstract(paprikaMethod, true);
-        }
         //Checking if the method is a constructor
-        if(paprikaMethod.getName().equals("init") || paprikaMethod.getName().equals("alloc")){
+       if(paprikaMethod.getName().equals("init") || paprikaMethod.getName().equals("alloc")){
             IsInit.createIsInit(paprikaMethod, true);
         }
         String methodName;
-        boolean isSetter =false;
-        boolean isGetter=false;
+        boolean lookForSetter =false;
         //Checking if the method is a setter or a getter
         methodName=paprikaMethod.getName();
-        if(methodName.endsWith(":")){
+        if(paprikaMethod.getArguments().size()==1 && methodName.startsWith("set") ){
             methodName= paprikaMethod.getName().replace(":","");
-        }else{
-            methodName=paprikaMethod.getName();
-        }
-        if(methodName.startsWith("set")) {
             methodName = methodName.replace("set", "");
+            lookForSetter=true;
         }
-        for(PaprikaVariable paprikaVariable: paprikaMethod.getPaprikaClass().getPaprikaVariables()){
+        String varName;
+        if(lookForSetter || paprikaMethod.getArguments().size()==0) {
+            for (PaprikaVariable paprikaVariable : paprikaMethod.getPaprikaClass().getPaprikaVariables()) {
+                if(!lookForSetter) {
+                    varName=paprikaVariable.getName();
+                    varName =varName.replaceFirst("_","");
+                    if (paprikaMethod.getName().equals(paprikaVariable.getName())|| paprikaMethod.getName().
+                            equalsIgnoreCase("get"+paprikaVariable.getName()) || varName.equalsIgnoreCase(paprikaMethod.getName())
+                            || paprikaMethod.getName().equalsIgnoreCase("get"+varName)) {
+                        if(paprikaMethod.getReturnType().equals(paprikaVariable.getType()))
+                        {
+                            IsGetter.createIsGetter(paprikaMethod, true);
+                            break;
+                        }
 
-            if(methodName.equals(paprikaVariable.getName())){
-                IsGetter.createIsGetter(paprikaMethod, isGetter);
-                break;
+                    }
+                }else {
+                    varName=paprikaVariable.getName();
+                    varName =varName.replaceFirst("_","");
+                    if (methodName.equalsIgnoreCase(paprikaVariable.getName()) || methodName.equalsIgnoreCase(varName) ) {
+                        if(paprikaMethod.getArguments().get(0).getName().equals(paprikaVariable.getType())) {
+                            IsSetter.createIsSetter(paprikaMethod, true);
+                            break;
+                        }
+                    }
+                }
             }
-
-            if(methodName.equals(paprikaVariable.getName())){
-                IsSetter.createIsSetter(paprikaMethod, isSetter);
-                break;
-            }
-
         }
-
 
 
         if(paprikaMethod.getStatic()){
@@ -105,7 +125,7 @@ public class MetricsCalculator {
     }
 
 
-    private int calculateNumberOfDeclaredLocals(PaprikaStatement statement){
+    private static int calculateNumberOfDeclaredLocals(PaprikaStatement statement){
         int n= 0 ;
         n= statement.getVariables().size();
         for(PaprikaStatement st : statement.getChildrenStatements()){
@@ -116,10 +136,11 @@ public class MetricsCalculator {
 
     }
 
-    private void calculateGraphMetrics(PaprikaApp app){
+    private static void calculateGraphMetrics(PaprikaApp app){
         HashMap<PaprikaMethod, Integer> numberOfCallers = new HashMap<>();
         Integer nb;
         for(PaprikaClass paprikaClass: app.getPaprikaClasses()){
+            System.out.println("First loop");
             for (PaprikaMethod paprikaMethod: paprikaClass.getPaprikaMethods()){
                 if(!numberOfCallers.containsKey(paprikaMethod)){
                     numberOfCallers.put(paprikaMethod,0);
@@ -142,11 +163,14 @@ public class MetricsCalculator {
         PaprikaClass paprikaClass2;
         for(PaprikaClass paprikaClass:app.getPaprikaClasses()){
             //calculate Depth Of Inheritance
+            System.out.println("Second loop");
             paprikaClass2=paprikaClass;
             depth=0;
+            System.out.println(" name:"+ paprikaClass2.getParent());
             while(paprikaClass2.getParent() !=null){
+
                 depth++;
-                paprikaClass2=paprikaClass.getParent();
+                paprikaClass2=paprikaClass2.getParent();
             }
             if(paprikaClass2.getParentName()!=null){
                 depth++;

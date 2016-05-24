@@ -94,7 +94,7 @@ public class ModelGenerator extends ObjCBaseListener {
 
     @Override public void enterInstance_method_definition(@NotNull ObjCParser.Instance_method_definitionContext ctx) {
         String name="";
-        System.out.println(" start line: "+ ctx.getStart().getLine() + " end : "+ ctx.getStop().getLine());
+        //System.out.println(" start line: "+ ctx.getStart().getLine() + " end : "+ ctx.getStop().getLine());
         LinkedHashMap<String, String> args = new LinkedHashMap<>(0);
         ObjCParser.Method_selectorContext ms =ctx.method_definition().method_selector();
         ObjCParser.SelectorContext sc = ms.selector();
@@ -235,31 +235,42 @@ public class ModelGenerator extends ObjCBaseListener {
     {
         for(PaprikaClass c: this.app.getPaprikaClasses()){
             System.out.println("La classe "+ c.getName());
-            for (PaprikaVariable v: c.getPaprikaVariables()){
+/*            for (PaprikaVariable v: c.getPaprikaVariables()){
                 System.out.println("++ Variable: "+v.getName()+" type: "+v.getType()+" modfier "+ v.getModifier() );
-            }
-            for(PaprikaClass inter : c.getInterfaces()){
+            }*/
+/*            for(PaprikaClass inter : c.getInterfaces()){
                 System.out.println(":: Implements interface : "+ inter.getName() );
-            }
+            }*/
+
+            System.out.println("===Metrics===");
+            System.out.println("NOA: "+c.getPaprikaVariables().size() );
+            System.out.println("NOII: "+c.getInterfaces().size() );
+            System.out.println("NOM: "+c.getPaprikaMethods().size() );
+            System.out.println("IsInteractor: "+c.isInteractor());
+            System.out.println("IsViewController: "+c.isViewController());
+            System.out.println("IsRouter: "+c.isRouter());
+            System.out.println("NOL: "+c.getNumberOfLinesOfCode());
+            System.out.println("CAMC:"+c.computeCAMC());
            for(PaprikaMethod m : c.getPaprikaMethods())
             {
                 System.out.println("Methode: "+m.getName()+" RType: "
                         + m.getReturnType() + " fonction: "+ m.getFunction()+
                         " statique: "+ m.getStatic() );
+                System.out.println("CPLX: "+m.getCyclomaticComplexity());
                 /*for(PaprikaArgument arg : m.getArguments())
                 {
                     System.out.println("--Arg: " + arg.getArgumentName()+" type: "+arg.getName() + " position: "+arg.getPosition());
-                }*/
+                }
                 //printing the statements
                 if(m.getStatement()!= null){
                     printStatement(m.getStatement());
-                }
+                }*/
 
             }
         }
-        for(PaprikaExternalClass ec: this.app.getPaprikaExternalClasses()){
+       /* for(PaprikaExternalClass ec: this.app.getPaprikaExternalClasses()){
             System.out.println("paprika external class : "+ ec.getName());
-        }
+        }*/
     }
 
     public void printStatement(PaprikaStatement statement){

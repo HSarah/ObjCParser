@@ -22,7 +22,8 @@ public class PaprikaClass extends Entity{
     private boolean isAppDelegate;
     private boolean isViewController;
     private int numberOfLinesOfCode;
-
+    private boolean isInteractor;
+    private boolean isRouter;
 
 
     public Set<PaprikaVariable> getPaprikaVariables() {
@@ -58,13 +59,17 @@ public class PaprikaClass extends Entity{
         //check if it's a ViewController or an AppDelegate
         this.isViewController=false;
         this.isViewController=false;
+        this.isInteractor=false;
+        this.isRouter=false;
         String lowerCaseName = name.toLowerCase();
-        if(name.contains("viewcontroller")){
+        if(lowerCaseName.contains("viewcontroller")){
             this.isViewController=true;
-        }else{
-            if(lowerCaseName.contains("appdelegate")){
-                this.isAppDelegate=true;
-            }
+        }else if(lowerCaseName.contains("appdelegate")){
+            this.isAppDelegate=true;
+        }else if(lowerCaseName.contains("interactor")){
+            this.isInteractor=true;
+        }else if(lowerCaseName.contains("router")|| lowerCaseName.contains("wireframe")){
+            this.isRouter =true;
         }
 
         //TODO add the private class case
@@ -139,6 +144,33 @@ public class PaprikaClass extends Entity{
         return LCOM > 0 ? LCOM : 0;
     }
 
+    public float computeCAMC(){
+        ArrayList<String> classParameters = new ArrayList<>(0);
+        ArrayList<String> methodParameters;
+        int classNumber = 0;
+        for(PaprikaMethod paprikaMethod: this.getPaprikaMethods()){
+            methodParameters=new ArrayList<>();
+            for(PaprikaArgument argument: paprikaMethod.getArguments()){
+                if(!methodParameters.contains(argument.getName())){
+                    methodParameters.add(argument.getName());
+                    if(!classParameters.contains(argument.getName()))
+                    {
+                        classParameters.add(argument.getName());
+                    }
+                }
+            }
+            classNumber = classNumber+ methodParameters.size();
+        }
+        float camc=1;
+        System.out.println("CP: "+classParameters.size());
+        System.out.println("CN: "+classNumber);
+        if(classParameters.size()!=0){
+            camc = ((float)classNumber)/((float)classParameters.size()*(float)this.getPaprikaMethods().size());
+        }
+
+        return camc;
+    }
+
     public void addPaprikaVariable(PaprikaVariable paprikaVariable) {
         paprikaVariables.add(paprikaVariable);
     }
@@ -193,5 +225,13 @@ public class PaprikaClass extends Entity{
 
     public boolean isViewController() {
         return isViewController;
+    }
+
+    public boolean isInteractor() {
+        return isInteractor;
+    }
+
+    public boolean isRouter() {
+        return isRouter;
     }
 }

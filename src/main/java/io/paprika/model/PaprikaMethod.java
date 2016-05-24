@@ -37,7 +37,7 @@ public class PaprikaMethod extends Entity{
         modifier = PaprikaModifiers.PUBLIC; // The default visibility of methods is public
         this.paprikaMessages = new ArrayList<>(0);
         numberOfLines= 0 ;
-        cyclomaticComplexity=0;
+        cyclomaticComplexity=1;
     }
 
     public static PaprikaMethod createPaprikaMethod(String name, String returnType,  PaprikaClass paprikaClass, boolean isFunction, boolean isStatic) {

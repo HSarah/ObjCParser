@@ -7,29 +7,30 @@ import org.neo4j.graphdb.Transaction;
 import java.io.IOException;
 
 /**
- * Created by Geoffrey Hecht on 18/08/15.
+ * Created by Sarra on 22/05/2016.
  */
-public class NLMRQuery extends Query {
+public class ILMWQuery extends Query {
 
-    private NLMRQuery(QueryEngine queryEngine) {
+
+    private ILMWQuery(QueryEngine queryEngine) {
         super(queryEngine);
     }
 
-    public static NLMRQuery createNLMRQuery(QueryEngine queryEngine) {
-        return new NLMRQuery(queryEngine);
+    public static ILMWQuery createILMWQuery(QueryEngine queryEngine) {
+        return new ILMWQuery(queryEngine);
     }
 
     @Override
     public void execute(boolean details) throws CypherException, IOException {
         try (Transaction ignored = graphDatabaseService.beginTx()) {
-            String query = "MATCH (cl:Class) WHERE HAS(cl.is_activity) AND NOT (cl:Class)-[:CLASS_OWNS_METHOD]->(:Method { name: 'onLowMemory' }) AND NOT cl-[:EXTENDS]->(:Class) RETURN cl.app_key as app_key";
+            String query = "MATCH (cl:Class) WHERE HAS(cl.is_view_controller) AND NOT (cl:Class)-[:CLASS_OWNS_METHOD]->(:Method{name:'didReceiveMemoryWarning'}) RETURN cl.app_key as app_key";
             if(details){
                 query += ",cl.name as full_name";
             }else{
-                query += ",count(cl) as NLMR";
+                query += ",count(cl) as ILMW";
             }
             Result result = graphDatabaseService.execute(query);
-            queryEngine.resultToCSV(result, "_NLMR.csv");
+            queryEngine.resultToCSV(result, "_ILMW.csv");
         }
     }
 }

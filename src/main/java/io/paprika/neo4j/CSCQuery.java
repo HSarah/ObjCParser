@@ -7,29 +7,30 @@ import org.neo4j.graphdb.Transaction;
 import java.io.IOException;
 
 /**
- * Created by Geoffrey Hecht on 18/08/15.
+ * Created by Sarra on 24/05/2016.
  */
-public class LICQuery extends Query {
+public class CSCQuery extends Query {
 
-    private LICQuery(QueryEngine queryEngine) {
+
+    private CSCQuery(QueryEngine queryEngine) {
         super(queryEngine);
     }
 
-    public static LICQuery createLICQuery(QueryEngine queryEngine) {
-        return new LICQuery(queryEngine);
+    public static CSCQuery createCSCQuery(QueryEngine queryEngine) {
+        return new CSCQuery(queryEngine);
     }
 
     @Override
     public void execute(boolean details) throws CypherException, IOException {
         try (Transaction ignored = graphDatabaseService.beginTx()) {
-            String query = "MATCH (cl:Class) WHERE HAS(cl.is_inner_class) AND NOT HAS(cl.is_static) RETURN cl.app_key as app_key";
+            String query = "MATCH (cl:Class) WHERE (cl:Class)-[:CLASS_OWNS_METHOD]->(:Method)-[:CALLS]->(:ExternalMethod{name:'sendSynchronousRequest:returningResponse:error:'}) RETURN cl.app_key as app_key";
             if(details){
                 query += ",cl.name as full_name";
             }else{
-                query += ",count(cl) as LIC";
+                query += ",count(cl) as CSC";
             }
             Result result = graphDatabaseService.execute(query);
-            queryEngine.resultToCSV(result, "_LIC.csv");
+            queryEngine.resultToCSV(result, "_CSC.csv");
         }
     }
 }

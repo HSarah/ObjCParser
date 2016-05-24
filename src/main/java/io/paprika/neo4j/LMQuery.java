@@ -22,7 +22,7 @@ public class LMQuery extends FuzzyQuery{
 
     private LMQuery(QueryEngine queryEngine) {
         super(queryEngine);
-        fclFile = "/LongMethod.fcl";
+        fclFile = "fcl/LongMethod.fcl";
     }
 
     public static LMQuery createLMQuery(QueryEngine queryEngine) {
@@ -32,7 +32,7 @@ public class LMQuery extends FuzzyQuery{
     public void execute(boolean details) throws CypherException, IOException {
         Result result;
         try (Transaction ignored = graphDatabaseService.beginTx()) {
-            String query = "MATCH (m:Method) WHERE m.number_of_instructions >" + veryHigh + " RETURN m.app_key as app_key";
+            String query = "MATCH (m:Method) WHERE m.number_of_lines >" + veryHigh + " RETURN m.app_key as app_key";
             if(details){
                 query += ",m.full_name as full_name";
             }else{
@@ -46,7 +46,7 @@ public class LMQuery extends FuzzyQuery{
     public void executeFuzzy(boolean details) throws CypherException, IOException {
             Result result;
             try (Transaction ignored = graphDatabaseService.beginTx()) {
-                String query =  "MATCH (m:Method) WHERE m.number_of_instructions >" + high + " RETURN m.app_key as app_key,m.number_of_instructions as number_of_instructions";
+                String query =  "MATCH (m:Method) WHERE m.number_of_lines >" + high + " RETURN m.app_key as app_key, m.number_of_lines as number_of_lines";
                 if(details){
                     query += ",m.full_name as full_name";
                 }
@@ -66,11 +66,11 @@ public class LMQuery extends FuzzyQuery{
                 FunctionBlock fb = fis.getFunctionBlock(null);
                 while(result.hasNext()){
                     HashMap res = new HashMap(result.next());
-                    cc = (int) res.get("number_of_instructions");
+                    cc = (int) res.get("number_of_lines");
                     if(cc >= veryHigh){
                         res.put("fuzzy_value", 1);
                     }else {
-                        fb.setVariable("number_of_instructions",cc);
+                        fb.setVariable("number_of_lines",cc);
                         fb.evaluate();
                         res.put("fuzzy_value", fb.getVariable("res").getValue());
                     }

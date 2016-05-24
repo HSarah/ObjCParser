@@ -10,9 +10,12 @@ public class PaprikaApp extends Entity{
     private ArrayList<PaprikaExternalClass> paprikaExternalClasses;
     private ArrayList<PaprikaGlobalVariable> paprikaGlobalVariables;
     private ArrayList<PaprikaFunction> paprikaFunctions;
-
-    private PaprikaApp(String name) {
+    private String category;
+    private String appKey;
+    private PaprikaApp(String name, String category, String appKey) {
         this.name = name;
+        this.category=category;
+        this.appKey = appKey;
         paprikaClasses = new ArrayList<PaprikaClass>();
         paprikaExternalClasses = new ArrayList<PaprikaExternalClass>();
         paprikaGlobalVariables = new ArrayList<>();
@@ -38,8 +41,8 @@ public class PaprikaApp extends Entity{
         paprikaClasses.add(paprikaClass);
     }
 
-    public static PaprikaApp createPaprikaApp(String name) {
-        return new PaprikaApp(name);
+    public static PaprikaApp createPaprikaApp(String name, String category, String appKey) {
+        return new PaprikaApp(name, category, appKey);
     }
 
     public ArrayList<PaprikaGlobalVariable> getPaprikaGlobalVariables() {
@@ -68,5 +71,13 @@ public class PaprikaApp extends Entity{
 
     public void addPaprikaFunction(PaprikaFunction paprikaFunction) {
         this.paprikaFunctions.add(paprikaFunction);
+    }
+
+    public String getAppKey() {
+        return appKey;
+    }
+
+    public String getCategory() {
+        return category;
     }
 }

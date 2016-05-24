@@ -43,15 +43,26 @@ public class QuartileCalculator {
         queryEngine.statsToCSV(res, "_STAT_CYCLOMATIC_COMPLEXITY.csv");
     }
 
-    public void calculateNumberofInstructionsQuartile() throws IOException {
+    public void calculateNumberofMethodLines() throws IOException {
         Map<String, Double> res;
         Result result;
         try (Transaction ignored = graphDatabaseService.beginTx()) {
-            String query = "MATCH (n:Method) WHERE NOT HAS(n.is_getter) AND NOT HAS(n.is_setter) AND n.number_of_instructions > 0 RETURN percentileCont(n.number_of_instructions,0.25) as Q1, percentileCont(n.number_of_instructions,0.5) as MED, percentileCont(n.number_of_instructions,0.75) as Q3";
+            String query = "MATCH (n:Method) WHERE NOT HAS(n.is_getter) AND NOT HAS(n.is_setter) AND n.number_of_lines > 0 RETURN percentileCont(n.number_of_lines,0.25) as Q1, percentileCont(n.number_of_lines,0.5) as MED, percentileCont(n.number_of_lines,0.75) as Q3";
             result = graphDatabaseService.execute(query);
             res = calculeTresholds(result);
         }
-        queryEngine.statsToCSV(res, "_STAT_NB_INSTRUCTIONS.csv");
+        queryEngine.statsToCSV(res, "_STAT_NB_METHOD_LINES.csv");
+    }
+
+    public void calculateNumberofClassLines() throws IOException {
+        Map<String, Double> res;
+        Result result;
+        try (Transaction ignored = graphDatabaseService.beginTx()) {
+            String query = "MATCH (n:Class) WHERE NOT HAS(n.is_interface)  AND n.number_of_lines > 0 RETURN percentileCont(n.number_of_lines,0.25) as Q1, percentileCont(n.number_of_lines,0.5) as MED, percentileCont(n.number_of_lines,0.75) as Q3";
+            result = graphDatabaseService.execute(query);
+            res = calculeTresholds(result);
+        }
+        queryEngine.statsToCSV(res, "_STAT_NB_CLASS_LINES.csv");
     }
 
     public Map calculateQuartile(String nodeType, String property){
@@ -110,15 +121,15 @@ public class QuartileCalculator {
         queryEngine.statsToCSV(res, "_STAT_NB_METHODS_INTERFACE.csv");
     }
 
-    public void calculateLackofCohesionInMethodsQuartile() throws IOException {
+    public void calculateCohesionAmongMethodsOfClass() throws IOException {//CAMC
         Map<String, Double> res;
         Result result;
         try (Transaction ignored = graphDatabaseService.beginTx()) {
-            String query = "MATCH (n:Class) WHERE NOT HAS(n.is_interface) AND NOT HAS(n.is_abstract) RETURN percentileCont(n.lack_of_cohesion_in_methods,0.25) as Q1, percentileCont(n.lack_of_cohesion_in_methods,0.5) as MED, percentileCont(n.lack_of_cohesion_in_methods,0.75) as Q3";
+            String query = "MATCH (n:Class) WHERE NOT HAS(n.is_interface) AND NOT HAS(n.is_abstract) RETURN percentileCont(n.cohesion_among_methods_of_class,0.25) as Q1, percentileCont(n.cohesion_among_methods_of_class,0.5) as MED, percentileCont(n.cohesion_among_methods_of_class,0.75) as Q3";
             result = graphDatabaseService.execute(query);
             res = calculeTresholds(result);
         }
-        queryEngine.statsToCSV(res, "_STAT_LCOM.csv");
+        queryEngine.statsToCSV(res, "_STAT_CAMC.csv");
     }
 
     public void calculateNumberOfMethodsQuartile() throws IOException {

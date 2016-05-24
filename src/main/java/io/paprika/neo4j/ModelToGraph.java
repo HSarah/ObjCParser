@@ -1,9 +1,8 @@
 package io.paprika.neo4j;
 
+import io.paprika.metrics.Metric;
 import org.neo4j.graphdb.*;
 import io.paprika.model.*;
-//import metrics.Metric;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -59,13 +58,13 @@ public class ModelToGraph {
     }
 
     public Node insertApp(PaprikaApp paprikaApp){
-        this.key = paprikaApp.getName(); //TODO create app keys
+        this.key = paprikaApp.getAppKey();
         Node appNode;
         try ( Transaction tx = graphDatabaseService.beginTx() ){
             appNode = graphDatabaseService.createNode(appLabel);
             appNode.setProperty("app_key",key);
             appNode.setProperty("name",paprikaApp.getName());
-            //appNode.setProperty("category",paprikaApp.getCategory());
+            appNode.setProperty("category",paprikaApp.getCategory());
             //appNode.setProperty("package",paprikaApp.getPack());
             //appNode.setProperty("developer",paprikaApp.getDeveloper());
             //appNode.setProperty("rating",paprikaApp.getRating());
@@ -95,9 +94,9 @@ public class ModelToGraph {
                 tempNode= insertGlobalVariable(variable);
                 appNode.createRelationshipTo(tempNode,RelationTypes.APP_OWNS_GLOBAL_VARIABLE);
             }
-           /* for(Metric metric : paprikaApp.getMetrics()){
+            for(Metric metric : paprikaApp.getMetrics()){
                 insertMetric(metric, appNode);
-            }*/
+            }
             tx.success();
         }
         try ( Transaction tx = graphDatabaseService.beginTx() ){
@@ -108,9 +107,9 @@ public class ModelToGraph {
         return appNode;
     }
 
-    /*private void insertMetric(Metric metric, Node node) {
+    private void insertMetric(Metric metric, Node node) {
         node.setProperty(metric.getName(),metric.getValue());
-    }*/
+    }
 
 
     public Node insertClass(PaprikaClass paprikaClass){
@@ -131,10 +130,9 @@ public class ModelToGraph {
         }
 
 
-        //TODO add the isInterface metric
-        /*for(Metric metric : paprikaClass.getMetrics()){
+        for(Metric metric : paprikaClass.getMetrics()){
             insertMetric(metric,classNode);
-        }*/
+        }
         return classNode;
     }
 
@@ -154,9 +152,9 @@ public class ModelToGraph {
             tempNode= insertExternalVariable(variable);
             classNode.createRelationshipTo(tempNode,RelationTypes.CLASS_OWNS_VARIABLE);
         }
-        /*for(Metric metric : paprikaClass.getMetrics()){
+        for(Metric metric : paprikaClass.getMetrics()){
             insertMetric(metric,classNode);
-        }*/
+        }
         return classNode;
     }
 
@@ -168,9 +166,9 @@ public class ModelToGraph {
         variableNode.setProperty("modifier", paprikaVariable.getModifier().toString().toLowerCase());
         variableNode.setProperty("type", paprikaVariable.getType());
         //TODO add the isGlobal metric
-        /*for(Metric metric : paprikaVariable.getMetrics()){
+        for(Metric metric : paprikaVariable.getMetrics()){
             insertMetric(metric, variableNode);
-        }*/
+        }
         return variableNode;
     }
 
@@ -352,9 +350,9 @@ public class ModelToGraph {
         methodNode.setProperty("modifier", paprikaMethod.getModifier().toString().toLowerCase());
         methodNode.setProperty("full_name",paprikaMethod.toString());
         methodNode.setProperty("return_type",paprikaMethod.getReturnType());
-        /*for(Metric metric : paprikaMethod.getMetrics()){
+        for(Metric metric : paprikaMethod.getMetrics()){
             insertMetric(metric, methodNode);
-        }*/
+        }
         for(PaprikaVariable paprikaVariable : paprikaMethod.getUsedVariables()){
             methodNode.createRelationshipTo(variableNodeMap.get(paprikaVariable),RelationTypes.USES);
         }
@@ -377,9 +375,9 @@ public class ModelToGraph {
         methodNode.setProperty("name",paprikaMethod.getName());
         methodNode.setProperty("full_name",paprikaMethod.toString());
         methodNode.setProperty("return_type",paprikaMethod.getReturnType());
-        /*for(Metric metric : paprikaMethod.getMetrics()){
+        for(Metric metric : paprikaMethod.getMetrics()){
             insertMetric(metric, methodNode);
-        }*/
+        }
         for(PaprikaExternalArgument arg : paprikaMethod.getPaprikaExternalArguments()){
             methodNode.createRelationshipTo(insertExternalArgument(arg),RelationTypes.METHOD_OWNS_ARGUMENT);
         }

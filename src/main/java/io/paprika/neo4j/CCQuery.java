@@ -22,7 +22,7 @@ public class CCQuery extends FuzzyQuery{
 
     private CCQuery(QueryEngine queryEngine) {
         super(queryEngine);
-        fclFile = "/ComplexClass.fcl";
+        fclFile = "fcl/ComplexClass.fcl";
     }
 
     public static CCQuery createCCQuery(QueryEngine queryEngine) {

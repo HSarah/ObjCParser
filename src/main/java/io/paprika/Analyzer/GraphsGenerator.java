@@ -145,7 +145,32 @@ public class GraphsGenerator extends ObjCBaseListener{
             currentMethod.setCyclomaticComplexity(currentMethod.getCyclomaticComplexity()+1);
         }
     }
-
+/*
+    @Override public void enterAnd_expression(@NotNull ObjCParser.And_expressionContext ctx){
+        if(ctx.getChildCount()>2 && currentMethod!=null){
+            currentMethod.setCyclomaticComplexity(currentMethod.getCyclomaticComplexity()+1);
+        }
+    }
+    @Override public void enterInclusive_or_expression(@NotNull ObjCParser.Inclusive_or_expressionContext ctx){
+        if(ctx.getChildCount()>2 && currentMethod!=null){
+            currentMethod.setCyclomaticComplexity(currentMethod.getCyclomaticComplexity()+1);
+        }
+    }
+    @Override public void enterExclusive_or_expression(@NotNull ObjCParser.Exclusive_or_expressionContext ctx){
+        if(ctx.getChildCount()>2 && currentMethod!=null){
+            currentMethod.setCyclomaticComplexity(currentMethod.getCyclomaticComplexity()+1);
+        }
+    }
+    @Override public void enterLogical_or_expression(@NotNull ObjCParser.Logical_or_expressionContext ctx){
+        if(ctx.getChildCount()>2 && currentMethod!=null){
+            currentMethod.setCyclomaticComplexity(currentMethod.getCyclomaticComplexity()+1);
+        }
+    }
+    @Override public void enterLogical_and_expression(@NotNull ObjCParser.Logical_and_expressionContext ctx){
+        if(ctx.getChildCount()>2 && currentMethod!=null){
+            currentMethod.setCyclomaticComplexity(currentMethod.getCyclomaticComplexity()+1);
+        }
+    }*/
 
     @Override public void enterCompound_statement(@NotNull ObjCParser.Compound_statementContext ctx) {
         currentStatement= ctx;
@@ -162,7 +187,7 @@ public class GraphsGenerator extends ObjCBaseListener{
         }
 
     }
-    /*
+  /*
     @Override public void exitPostfix_expression(@NotNull ObjCParser.Postfix_expressionContext ctx) {
         PaprikaClass paprikaClass;
         PaprikaVariable variable;
@@ -170,11 +195,10 @@ public class GraphsGenerator extends ObjCBaseListener{
             //Resolve the variable class
             Entity entity = customizedVisitor.visitPrimary_expression(ctx.primary_expression());
             if(entity instanceof PaprikaExternalClass){
-                //TODO The use of external variables
+
             }else{
                 for(ObjCParser.IdentifierContext id : ctx.identifier()){
                     //Find the variable in the class
-
                     variable=null;
                     for(PaprikaVariable v : ((PaprikaClass) entity).getPaprikaVariables()){
                         if(v.getName().equals(id.IDENTIFIER().getText())){
@@ -200,7 +224,7 @@ public class GraphsGenerator extends ObjCBaseListener{
                     }
                     if(variable==null){
                         break ;
-                        //TODO use of external parent's variables
+
                     }else{
                         entity = resolveType(variable.getType());
                         if(entity instanceof  PaprikaExternalClass){

@@ -17,8 +17,8 @@ import java.util.Map;
  * Created by Geoffrey Hecht on 14/08/15.
  */
 public class SAKQuery extends FuzzyQuery{
-    protected static double high = 8.5;
-    protected static double veryHigh = 13;
+    protected static double high = 2;
+    protected static double veryHigh = 3;
 
     private SAKQuery(QueryEngine queryEngine) {
         super(queryEngine);
