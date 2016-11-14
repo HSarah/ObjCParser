@@ -99,9 +99,7 @@ public class Analyzer {
         graphsGenerator.buildGraph();
         //graphsGenerator.printGraph();
         //modelGenerator.printModel();
-        System.out.print("before metrics ");
         MetricsCalculator.calculateAppMetrics(modelGenerator.getApp());
-        System.out.println("after metrics");
         ModelToGraph modelToGraph = new ModelToGraph("BDD-test");
         modelToGraph.insertApp(modelGenerator.getApp());
 
@@ -109,7 +107,7 @@ public class Analyzer {
     }
 
 
-    public void identifyPatterns(){
+    public void identifyLMFuzzy(){
         QueryEngine queryEngine =new QueryEngine("BDD-test");
         try{
             LMQuery.createLMQuery(queryEngine).executeFuzzy(true);
@@ -119,6 +117,76 @@ public class Analyzer {
         }
 
     }
+    public void identifyBLOB(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            BLOBQuery.createBLOBQuery(queryEngine).execute(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+    public void identifyBLOBFuzzy(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            BLOBQuery.createBLOBQuery(queryEngine).executeFuzzy(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+    public void identifyLM(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            LMQuery.createLMQuery(queryEngine).execute(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+
+
+    public void identifySAK(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            SAKQuery.createSAKQuery(queryEngine).execute(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+    public void identifySAKFuzzy(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            SAKQuery.createSAKQuery(queryEngine).executeFuzzy(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+
+    public void identifyCSC(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            CSCQuery.createCSCQuery(queryEngine).execute(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+
     public void listFilesForFolder(final File folder) throws IOException {
         for (final File fileEntry : folder.listFiles()) {
             if (fileEntry.isDirectory()) {
@@ -137,6 +205,85 @@ public class Analyzer {
     }
 
 
+    public void identifyCC(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            CCQuery.createCCQuery(queryEngine).execute(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+
+    public void identifyCCFuzzy(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            CCQuery.createCCQuery(queryEngine).executeFuzzy(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+    public void identifyMVCFuzzy(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            MVCQuery.createMVCQuery(queryEngine).executeFuzzy(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+    public void identifyMVC(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            MVCQuery.createMVCQuery(queryEngine).execute(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+    public void identifyILMW(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            ILMWQuery.createILMWQuery(queryEngine).execute(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+
+
+    public void identifyVIPER(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            VIPERQuery.createVIPERQuery(queryEngine).execute(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
+    public void identifyHEBT(){
+        QueryEngine queryEngine =new QueryEngine("BDD-test");
+        try{
+            HEBTQuery.createHEBTQuery(queryEngine).execute(true);
+        }catch (Exception ioe){
+            System.out.println(ioe.getCause());
+            ioe.printStackTrace();
+        }
+
+    }
+
     public void computeStatistics(){
         QueryEngine queryEngine =new QueryEngine("BDD-test");
         QuartileCalculator quartileCalculator = new QuartileCalculator(queryEngine);
@@ -148,6 +295,7 @@ public class Analyzer {
             quartileCalculator.calculateNumberOfMethodsQuartile();
             quartileCalculator.calculateNumberofMethodLines();
             quartileCalculator.calculateNumberofClassLines();
+            quartileCalculator.calculateNumberofViewControllerLines();
             quartileCalculator.calculateCyclomaticComplexityQuartile();
             quartileCalculator.calculateNumberOfMethodsForInterfacesQuartile();
         }catch (IOException ioe){
@@ -155,4 +303,6 @@ public class Analyzer {
             ioe.printStackTrace();
         }
     }
+
+
 }

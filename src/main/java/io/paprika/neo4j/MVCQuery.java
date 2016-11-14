@@ -17,15 +17,14 @@ import java.util.Map;
  * Created by Sarra on 22/05/2016.
  */
 public class MVCQuery extends FuzzyQuery {
-
-    protected static double high_noa = 5;
-    protected static double veryHigh_noa = 6;
-    protected static double high_nom = 5;
-    protected static double veryHigh_nom = 6;
-    protected static double veryLow_camc =0.2;
-    protected static double low_camc = 0.4;
-    protected static double veryHigh_nol =400;
-    protected static double high_nol =300;
+    protected static double high_noa = 15;
+    protected static double veryHigh_noa = 24;
+    protected static double high_nom = 18.5;
+    protected static double veryHigh_nom = 29;
+    protected static double veryLow_camc =0.1458333283662796;
+    protected static double low_camc = 0.2;
+    protected static double veryHigh_nol =502;
+    protected static double high_nol =375;
 
     private MVCQuery(QueryEngine queryEngine) {
         super(queryEngine);
@@ -40,8 +39,7 @@ public class MVCQuery extends FuzzyQuery {
         Result result;
         try (Transaction ignored = graphDatabaseService.beginTx()) {
             String query = "MATCH (cl:Class) WHERE HAS(cl.is_view_controller) AND cl.cohesion_among_methods_of_class <"
-                    + veryLow_camc + " AND cl.number_of_methods > " + veryHigh_nom + " AND cl.number_of_attributes > "
-                    + veryHigh_noa + " AND cl.number_of_lines >"+high_nol+" RETURN cl.app_key as app_key";
+                    + low_camc + " AND cl.number_of_methods > " + veryHigh_nom + " AND cl.number_of_lines >"+high_nol+" RETURN cl.app_key as app_key";
             if(details){
                 query += ",cl.name as full_name";
             }else{
@@ -55,7 +53,11 @@ public class MVCQuery extends FuzzyQuery {
     public void executeFuzzy(boolean details) throws CypherException, IOException {
         Result result;
         try (Transaction ignored = graphDatabaseService.beginTx()) {
-            String query = "MATCH (cl:Class) WHERE HAS(cl.is_view_controller) AND cl.cohesion_among_methods_of_class <" + low_camc + " AND cl.number_of_methods > " + high_nom + " AND cl.number_of_attributes > " + high_noa + " RETURN cl.app_key as app_key,cl.cohesion_among_methods_of_class as cohesion_among_methods_of_class,cl.number_of_methods as number_of_methods, cl.number_of_attributes as number_of_attributes, cl.number_of_lines as number_of_lines";
+            String query = "MATCH (cl:Class) WHERE HAS(cl.is_view_controller) AND cl.cohesion_among_methods_of_class <"+ low_camc
+                    + " AND cl.number_of_methods > "+ high_nom
+                    + " AND cl.number_of_attributes > "+ high_noa
+                    +  " AND cl.number_of_lines >"+high_nol
+                    +" RETURN cl.app_key as app_key,cl.cohesion_among_methods_of_class as cohesion_among_methods_of_class,cl.number_of_methods as number_of_methods, cl.number_of_attributes as number_of_attributes, cl.number_of_lines as number_of_lines";
             if(details){
                 query += ",cl.name as full_name";
             }
@@ -91,7 +93,7 @@ public class MVCQuery extends FuzzyQuery {
                 }
                 fuzzyResult.add(res);
             }
-            queryEngine.resultToCSV(fuzzyResult,columns,"MVC.csv");
+            queryEngine.resultToCSV(fuzzyResult,columns,"_MVC.csv");
         }
     }
 

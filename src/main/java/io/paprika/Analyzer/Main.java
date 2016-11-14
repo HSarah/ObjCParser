@@ -13,19 +13,27 @@ public class Main {
     public static void main(String[] args)
     {
         //The file path is hard-coded to avoid reading from System.in which is quite complicated with gradle
-        File f = new File("C:\\Users\\Sarra\\Desktop\\Adapt-Paprika\\iOS-apps\\Health\\rTracker-master\\Classes");
+        File f = new File("C:\\Users\\Sarra\\Desktop\\Adapt-Paprika\\iOS-apps\\Assistance\\RamblerConferences-develop\\conferences\\Classes");
         Analyzer analyzer = new Analyzer();
-        //analyzer.identifyPatterns();
-        //analyzer.computeStatistics();
+        analyzer.identifyHEBT();
+   //    analyzer.identifyCC();
+       // analyzer.identifyCCFuzzy();
+     //   analyzer.identifySAK();
+      ///  analyzer.identifySAKFuzzy();
+      //  analyzer.identifyILMW();
+       // analyzer.identifyVIPER();
+        //analyzer.identifyMVC();
+       // analyzer.identifyMVCFuzzy();
+        //analyzer.identifyBLOB();
+       // analyzer.identifyBLOBFuzzy();
+      // analyzer.identifyLM();
+        //analyzer.identifyLMFuzzy();
+    //   analyzer.identifyCSC();
 
-
-
-
-
-
-        String appName ="rTracker";
-        String appKey = "rTracker";
-        String category="Health";
+    //    analyzer.computeStatistics();
+  /*      String appName ="Conferences";
+        String appKey = appName;
+        String category="Assistance";
       try {
             analyzer.parse(f, appName, category, appKey);
 
@@ -33,7 +41,7 @@ public class Main {
         {
             ioe.printStackTrace();
             System.out.println("The cause:"+ ioe.getCause());
-        }
+        }*/
 
 
     }

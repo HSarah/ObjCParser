@@ -109,7 +109,11 @@ public class ModelGenerator extends ObjCBaseListener {
                 if (k.selector() != null) {
                     name=name.concat(k.selector().IDENTIFIER().toString()+":");
                 }
-                type =k.method_type(0).type_name().getText();
+                try {
+                    type = k.method_type(0).type_name().getText();
+                }catch (Exception e){
+                    type = "UknownClass";
+                }
                 if(type.endsWith(" *")){
                     type = type.substring(0, type.length() - 2);
                 }else if(type.endsWith("*")){
@@ -164,7 +168,12 @@ public class ModelGenerator extends ObjCBaseListener {
 
         }
 
-        String returnType =  ctx.method_definition().method_type().type_name().getText();
+        String returnType;
+        try {
+            returnType = ctx.method_definition().method_type().type_name().getText();
+        }catch (Exception e){
+            returnType = "UknownClass";
+        }
         if(returnType.endsWith(" *")){
             returnType = returnType.substring(0, returnType.length() - 2);
         }else if(returnType.endsWith("*")){
@@ -288,7 +297,11 @@ public class ModelGenerator extends ObjCBaseListener {
         String type="";
         if(declaration_specifiersContext.type_specifier()!= null)
         {
-            type= declaration_specifiersContext.type_specifier(0).getText();
+            try{
+                type= declaration_specifiersContext.type_specifier(0).getText();
+            }catch(Exception e){
+                type = "UknownClass";
+            }
         }
         return  type;
     }

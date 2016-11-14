@@ -25,9 +25,7 @@ public class MetricsCalculator {
         for(PaprikaClass paprikaClass: app.getPaprikaClasses()){
             calculateClassMetrics(paprikaClass);
         }
-        System.out.println("before Graph");
         calculateGraphMetrics(app);
-        System.out.println("after Graph");
     }
 
 
@@ -39,6 +37,8 @@ public class MetricsCalculator {
             IsInteractor.createIsInteractor(paprikaClass);
         }else if(paprikaClass.isRouter()){
             IsRouter.createIsRouter(paprikaClass);
+        }else if(paprikaClass.isPresenter()){
+            IsPresenter.createIsPresenter(paprikaClass);
         }
 
         NumberOfMethods.createNumberOfMethods(paprikaClass, paprikaClass.getPaprikaMethods().size());
@@ -50,14 +50,12 @@ public class MetricsCalculator {
             IsInterface.createIsInterface(paprikaClass, true);
         }
         CAMCMetric.createCAMCMetric(paprikaClass);
-        System.out.println("after CAMC");
         NumberOfLines.createNumberOfLines(paprikaClass, paprikaClass.getNumberOfLinesOfCode());
         CouplingBetweenObjects.createCouplingBetweenObjects(paprikaClass);
         NumberOfChildren.createNumberOfChildren(paprikaClass);
         for(PaprikaMethod paprikaMethod: paprikaClass.getPaprikaMethods()){
             calculateMethodMetrics(paprikaMethod);
         }
-        System.out.println("after Methods");
         //this instruction must be called after the loop
         ClassComplexity.createClassComplexity(paprikaClass);
     }
@@ -121,7 +119,7 @@ public class MetricsCalculator {
         NumberOfCallers.createNumberOfCallers(paprikaMethod,0);
         NumberOfLines.createNumberOfLines(paprikaMethod,paprikaMethod.getNumberOfLines());
         CyclomaticComplexity.createCyclomaticComplexity(paprikaMethod, paprikaMethod.getCyclomaticComplexity());
-        paprikaMethod.getPaprikaClass().addComplexity(paprikaMethod.getCyclomaticComplexity());
+       // paprikaMethod.getPaprikaClass().addComplexity(paprikaMethod.getCyclomaticComplexity());
     }
 
 
@@ -140,12 +138,10 @@ public class MetricsCalculator {
         HashMap<PaprikaMethod, Integer> numberOfCallers = new HashMap<>();
         Integer nb;
         for(PaprikaClass paprikaClass: app.getPaprikaClasses()){
-            System.out.println("First loop");
             for (PaprikaMethod paprikaMethod: paprikaClass.getPaprikaMethods()){
                 if(!numberOfCallers.containsKey(paprikaMethod)){
                     numberOfCallers.put(paprikaMethod,0);
                 }
-
                 for(Entity entity: paprikaMethod.getCalledMethods()){
                     if(entity instanceof PaprikaMethod){
                         nb=numberOfCallers.get((PaprikaMethod)entity);
@@ -163,10 +159,8 @@ public class MetricsCalculator {
         PaprikaClass paprikaClass2;
         for(PaprikaClass paprikaClass:app.getPaprikaClasses()){
             //calculate Depth Of Inheritance
-            System.out.println("Second loop");
             paprikaClass2=paprikaClass;
             depth=0;
-            System.out.println(" name:"+ paprikaClass2.getParent());
             while(paprikaClass2.getParent() !=null){
 
                 depth++;

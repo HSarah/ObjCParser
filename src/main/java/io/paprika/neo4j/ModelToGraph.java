@@ -420,7 +420,10 @@ public class ModelToGraph {
         for (PaprikaClass paprikaClass : paprikaApp.getPaprikaClasses()) {
             for (PaprikaMethod paprikaMethod : paprikaClass.getPaprikaMethods()){
                 for(Entity calledMethod : paprikaMethod.getCalledMethods()){
-                    methodNodeMap.get(paprikaMethod).createRelationshipTo(methodNodeMap.get(calledMethod),RelationTypes.CALLS);
+                    if(methodNodeMap.get(calledMethod)!= null)
+                    {
+                        methodNodeMap.get(paprikaMethod).createRelationshipTo(methodNodeMap.get(calledMethod),RelationTypes.CALLS);
+                    }
                 }
                 methodNode = methodNodeMap.get(paprikaMethod);
                 for(PaprikaMessage message : paprikaMethod.getPaprikaMessages()){

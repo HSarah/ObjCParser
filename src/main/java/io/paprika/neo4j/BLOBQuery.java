@@ -25,11 +25,11 @@ public class BLOBQuery extends FuzzyQuery{
     protected static double veryHigh_nom = 22;
     protected static double veryLow_camc =2;
     protected static double low_camc = 3;*/
-    protected static double high_noa = 10;
-    protected static double veryHigh_noa = 12;
-    protected static double high_nom = 10;
-    protected static double veryHigh_nom = 12;
-    protected static double veryLow_camc =0.4;
+    protected static double high_noa = 15;
+    protected static double veryHigh_noa = 24;
+    protected static double high_nom = 18.5;
+    protected static double veryHigh_nom = 29;
+    protected static double veryLow_camc =0.1458333283662796;
     protected static double low_camc = 0.2;
 
     private BLOBQuery(QueryEngine queryEngine) {
@@ -59,7 +59,7 @@ public class BLOBQuery extends FuzzyQuery{
             Result result;
             try (Transaction ignored = graphDatabaseService.beginTx()) {
                 System.out.println("1st");
-                String query = "MATCH (cl:Class) WHERE cl.cohesion_among_methods_of_class < " + low_camc + " AND cl.number_of_methods > " + high_nom + " AND cl.number_of_attributes > " + high_noa + " RETURN cl.app_key as app_key,cl.cohesion_among_methods_of_class as cohesion_among_methods_of_class,cl.number_of_methods as number_of_methods, cl.number_of_attributes as number_of_attributes";
+                String query = "MATCH (cl:Class) WHERE cl.cohesion_among_methods_of_class < " + veryLow_camc + " AND cl.number_of_methods > " + high_nom + " AND cl.number_of_attributes > " + high_noa + " RETURN cl.app_key as app_key,cl.cohesion_among_methods_of_class as cohesion_among_methods_of_class,cl.number_of_methods as number_of_methods, cl.number_of_attributes as number_of_attributes";
                 if(details){
                     query += ",cl.name as full_name";
                 }
@@ -78,7 +78,6 @@ public class BLOBQuery extends FuzzyQuery{
                     fis = FIS.load(getClass().getResourceAsStream(fclFile),false);
                 }
                 FunctionBlock fb = fis.getFunctionBlock(null);
-                System.out.println("Helloo");
                 while(result.hasNext()){
                     HashMap res = new HashMap(result.next());
                     System.out.println("pss1");

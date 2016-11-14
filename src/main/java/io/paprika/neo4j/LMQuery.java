@@ -17,8 +17,8 @@ import java.util.Map;
  * Created by Geoffrey Hecht on 14/08/15.
  */
 public class LMQuery extends FuzzyQuery{
-    protected static double high = 17;
-    protected static double veryHigh = 26;
+    protected static double high = 30.5;
+    protected static double veryHigh = 47;
 
     private LMQuery(QueryEngine queryEngine) {
         super(queryEngine);
@@ -79,4 +79,5 @@ public class LMQuery extends FuzzyQuery{
                     queryEngine.resultToCSV(fuzzyResult,columns,"_LM.csv");
             }
     }
+
 }

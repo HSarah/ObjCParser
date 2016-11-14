@@ -17,8 +17,8 @@ import java.util.Map;
  * Created by Geoffrey Hecht on 14/08/15.
  */
 public class CCQuery extends FuzzyQuery{
-    protected static double high = 28;
-    protected static double veryHigh = 43;
+    protected static double high = 41.5;
+    protected static double veryHigh = 64;
 
     private CCQuery(QueryEngine queryEngine) {
         super(queryEngine);
@@ -66,7 +66,7 @@ public class CCQuery extends FuzzyQuery{
                 FunctionBlock fb = fis.getFunctionBlock(null);
                 while(result.hasNext()){
                     HashMap res = new HashMap(result.next());
-                    cc = (int) res.get("class_complexity");
+                    cc= Integer.parseInt( res.get("class_complexity").toString());
                     if(cc >= veryHigh){
                         res.put("fuzzy_value", 1);
                     }else {

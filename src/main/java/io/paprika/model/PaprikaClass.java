@@ -24,6 +24,7 @@ public class PaprikaClass extends Entity{
     private int numberOfLinesOfCode;
     private boolean isInteractor;
     private boolean isRouter;
+    private boolean isPresenter;
 
 
     public Set<PaprikaVariable> getPaprikaVariables() {
@@ -61,6 +62,7 @@ public class PaprikaClass extends Entity{
         this.isViewController=false;
         this.isInteractor=false;
         this.isRouter=false;
+        this.isPresenter=false;
         String lowerCaseName = name.toLowerCase();
         if(lowerCaseName.contains("viewcontroller")){
             this.isViewController=true;
@@ -70,6 +72,8 @@ public class PaprikaClass extends Entity{
             this.isInteractor=true;
         }else if(lowerCaseName.contains("router")|| lowerCaseName.contains("wireframe")){
             this.isRouter =true;
+        }else if(lowerCaseName.endsWith("presenter")){
+            this.isPresenter=true;
         }
 
         //TODO add the private class case
@@ -162,8 +166,6 @@ public class PaprikaClass extends Entity{
             classNumber = classNumber+ methodParameters.size();
         }
         float camc=1;
-        System.out.println("CP: "+classParameters.size());
-        System.out.println("CN: "+classNumber);
         if(classParameters.size()!=0){
             camc = ((float)classNumber)/((float)classParameters.size()*(float)this.getPaprikaMethods().size());
         }
@@ -233,5 +235,9 @@ public class PaprikaClass extends Entity{
 
     public boolean isRouter() {
         return isRouter;
+    }
+
+    public boolean isPresenter() {
+        return isPresenter;
     }
 }

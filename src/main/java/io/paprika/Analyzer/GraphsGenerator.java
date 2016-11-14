@@ -766,13 +766,16 @@ public class GraphsGenerator extends ObjCBaseListener{
 
         @Override public Entity visitMessage_expression(@NotNull ObjCParser.Message_expressionContext ctx)
         {
-            Entity entity=((PaprikaMessage)methodsContexts.get(ctx)).getCalledMethod() ;
-            receiverEntity = methodsContexts.get(ctx);
-            if(entity instanceof PaprikaMethod)
-            {
-                return resolveType(((PaprikaMethod)entity).getReturnType());
+            if(methodsContexts.get(ctx)!=null) {
+                Entity entity = ((PaprikaMessage) methodsContexts.get(ctx)).getCalledMethod();
+                receiverEntity = methodsContexts.get(ctx);
+                if (entity instanceof PaprikaMethod) {
+                    return resolveType(((PaprikaMethod) entity).getReturnType());
+                } else {
+                    return resolveType(((PaprikaExternalMethod) entity).getReturnType());
+                }
             }else{
-                return resolveType(((PaprikaExternalMethod)entity).getReturnType());
+                return PaprikaExternalClass.createPaprikaExternalClass("UknownClass",app);
             }
 
         }

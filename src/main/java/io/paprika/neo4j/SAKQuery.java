@@ -17,12 +17,12 @@ import java.util.Map;
  * Created by Geoffrey Hecht on 14/08/15.
  */
 public class SAKQuery extends FuzzyQuery{
-    protected static double high = 2;
-    protected static double veryHigh = 3;
+    protected static double high = 6;
+    protected static double veryHigh = 9;
 
     private SAKQuery(QueryEngine queryEngine) {
         super(queryEngine);
-        fclFile = "/SwissArmyKnife.fcl";
+        fclFile = "fcl/SwissArmyKnife.fcl";
     }
 
     public static SAKQuery createSAKQuery(QueryEngine queryEngine) {
@@ -66,7 +66,7 @@ public class SAKQuery extends FuzzyQuery{
                 FunctionBlock fb = fis.getFunctionBlock(null);
                 while(result.hasNext()){
                     HashMap res = new HashMap(result.next());
-                    cc = (int) res.get("number_of_methods");
+                    cc = Integer.parseInt( res.get("number_of_methods").toString());
                     if(cc >= veryHigh){
                         res.put("fuzzy_value", 1);
                     }else {
